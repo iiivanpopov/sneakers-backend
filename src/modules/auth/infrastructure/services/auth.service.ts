@@ -4,8 +4,10 @@ import { Injectable } from '@nestjs/common'
 
 import { LoginDto } from '../../presentation/dto/login.dto'
 import { RegisterDto } from '../../presentation/dto/register.dto'
+import { User } from '../entities/User'
 import { OTPRepository } from '../repositories/otp.repository'
 import { UserRepository } from '../repositories/user.repository'
+import { verifyPassword } from '../utils/password'
 
 import {
 	UserAlreadyExists,
@@ -13,7 +15,8 @@ import {
 	UserNotFound,
 	MissingRefreshToken,
 	MultipleUsers,
-	OTPNotFound
+	OTPNotFound,
+	BadPassword
 } from '@/auth/exceptions'
 import { TokenService } from '@/token/infrastructure/services/token.service'
 
@@ -29,25 +32,36 @@ export class AuthService {
 		const exists = await this.userRepository.existsUnique(user)
 		if (exists) throw new UserAlreadyExists()
 
-		const confirmed = await this.otpRepository.confirm(user.email, otp)
-		if (!confirmed) throw new BadOTP()
+		const confirmedOTP = await this.otpRepository.confirm(user.email, otp)
+		if (!confirmedOTP) throw new BadOTP()
 
 		const created = await this.userRepository.create(user)
 		const tokens = await this.tokenService.generateTokens(created)
 
-		return { user: created, tokens }
+		return {
+			user: new User(created.email, created.name, created.phone, created.role),
+			tokens
+		}
 	}
 
-	async login({ otp, identifier }: LoginDto) {
+	async login({ otp, identifier, password }: LoginDto) {
 		const email = await this.resolveIdentifier(identifier)
-		const confirmed = await this.otpRepository.confirm(email, otp)
-		if (!confirmed) throw new BadOTP()
+
+		const confirmedOTP = await this.otpRepository.confirm(email, otp)
+		if (!confirmedOTP) throw new BadOTP()
 
 		const user = await this.userRepository.findByEmail(email)
 		if (!user) throw new UserNotFound()
+
+		const verifiedPassword = await verifyPassword(password, user.hashPassword)
+		if (!verifiedPassword) throw new BadPassword()
+
 		const tokens = await this.tokenService.generateTokens(user)
 
-		return { user, tokens }
+		return {
+			user: new User(user.email, user.name, user.phone, user.role),
+			tokens
+		}
 	}
 
 	async getOTP(identifier: string) {
@@ -57,6 +71,7 @@ export class AuthService {
 		if (existing) return existing
 
 		const newOTP = randomInt(100000, 1000000).toString()
+
 		return this.otpRepository.set(email, newOTP)
 	}
 
@@ -71,9 +86,13 @@ export class AuthService {
 
 		const user = await this.userRepository.findByRefreshToken(refreshToken)
 		if (!user) throw new UserNotFound()
+
 		const tokens = await this.tokenService.generateTokens(user)
 
-		return { user, tokens }
+		return {
+			user: new User(user.email, user.name, user.phone, user.role),
+			tokens
+		}
 	}
 
 	private async resolveIdentifier(identifier: string): Promise<string> {

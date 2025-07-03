@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 
 import { CreateUserPayload } from '../interfaces/create-user-payload'
 import { FindUniqueUserPayload } from '../interfaces/user-exists-payload'
+import { hashPassword } from '../utils/password'
 
 import { PrismaService } from '@/prisma/prisma.service'
 
@@ -9,8 +10,17 @@ import { PrismaService } from '@/prisma/prisma.service'
 export class UserRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create(payload: CreateUserPayload) {
-		return this.prisma.user.create({ data: payload })
+	async create({ password, name, email, phone }: CreateUserPayload) {
+		const hash = await hashPassword(password)
+
+		return this.prisma.user.create({
+			data: {
+				name,
+				email,
+				phone,
+				hashPassword: hash
+			}
+		})
 	}
 
 	async findByName(name: string) {

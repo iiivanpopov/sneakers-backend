@@ -14,6 +14,10 @@ class UserDto {
 	@IsString()
 	@IsNotEmpty()
 	phone: string
+
+	@IsString()
+	@IsNotEmpty()
+	password: string
 }
 
 export class RegisterDto {

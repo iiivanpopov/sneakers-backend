@@ -8,4 +8,8 @@ export class LoginDto {
 	@IsString()
 	@IsNotEmpty()
 	otp: string
+
+	@IsString()
+	@IsNotEmpty()
+	password: string
 }
