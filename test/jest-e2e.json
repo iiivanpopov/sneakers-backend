@@ -1,0 +1,22 @@
+{
+	"moduleFileExtensions": ["js", "json", "ts"],
+	"rootDir": "../",
+	"testRegex": ".e2e-spec.ts$",
+	"transform": {
+		"^.+\\.(t|j)s$": "ts-jest"
+	},
+	"setupFiles": ["<rootDir>/jest.setup.ts"],
+	"coverageDirectory": "./coverage-e2e",
+	"testEnvironment": "node",
+	"preset": "ts-jest",
+	"moduleNameMapper": {
+		"^@/(.*)$": "<rootDir>/src/$1",
+		"^@generated/(.*)$": "<rootDir>/generated/$1",
+		"^@app/prisma$": "<rootDir>/src/modules/prisma/prisma.module.ts",
+		"^@app/prisma/(.*)$": "<rootDir>/src/modules/prisma/$1",
+		"^@app/auth$": "<rootDir>/src/modules/auth/auth.module.ts",
+		"^@app/auth/(.*)$": "<rootDir>/src/modules/auth/$1",
+		"^@app/token$": "<rootDir>/src/modules/token/token.module.ts",
+		"^@app/token/(.*)$": "<rootDir>/src/modules/token/$1"
+	}
+}
