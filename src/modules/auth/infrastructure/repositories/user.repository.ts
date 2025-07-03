@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common'
 
 import { CreateUserPayload } from '../interfaces/create-user-payload'
-import {
-	FindUniqueUserPayload,
-	FindUserPayload
-} from '../interfaces/user-exists-payload'
+import { FindUniqueUserPayload } from '../interfaces/user-exists-payload'
 
-import { PrismaService } from '@/modules/prisma/prisma.service'
+import { PrismaService } from '@/prisma/prisma.service'
 
 @Injectable()
 export class UserRepository {
@@ -26,12 +23,6 @@ export class UserRepository {
 
 	async findByRefreshToken(refreshToken: string) {
 		return this.prisma.user.findFirst({ where: { token: { refreshToken } } })
-	}
-
-	async exists({ name, email }: FindUserPayload) {
-		return this.prisma.user.findFirst({
-			where: { OR: [{ email }, { name }] }
-		})
 	}
 
 	async existsUnique({ phone, email }: FindUniqueUserPayload) {

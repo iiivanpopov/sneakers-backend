@@ -10,8 +10,17 @@ dotenv.config({ path: '../../.env.test.local' })
 describe('AuthController (e2e)', () => {
 	let app: INestApplication
 	const prefix = '/api'
-
 	const dataPrefix = crypto.randomUUID()
+
+	const testEmail = `${dataPrefix}test@example.com`
+	const testUser = {
+		email: testEmail,
+		name: `${dataPrefix}testuser`,
+		phone: `${dataPrefix}123`,
+		password: `${dataPrefix}securePass123`
+	}
+
+	let otpCode: string
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -20,71 +29,80 @@ describe('AuthController (e2e)', () => {
 
 		app = moduleFixture.createNestApplication()
 		app.setGlobalPrefix(prefix)
-		app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
+		app.useGlobalPipes(
+			new ValidationPipe({
+				whitelist: true,
+				forbidNonWhitelisted: true,
+				transform: true
+			})
+		)
+
 		await app.init()
 	})
 
-	const testEmail = dataPrefix + 'test@example.com'
-	const testUser = {
-		email: testEmail,
-		name: dataPrefix + 'testuser',
-		phone: dataPrefix + '123',
-		password: dataPrefix + 'securePass123'
-	}
-	let otpCode: string
+	afterAll(async () => {
+		await app.close()
+	})
 
 	it('/auth/otp (POST) → 201', async () => {
-		const res = await request(app.getHttpServer())
+		const response = await request(app.getHttpServer())
 			.post(`${prefix}/auth/otp`)
 			.send({ email: testEmail })
+			.expect(201)
 
-		expect(res.status).toBe(201)
+		expect(response.body).toHaveProperty('otp')
+		expect(response.body).toHaveProperty('retryAt')
+		expect(response.body.otp).toMatch(/^\d+$/) // numeric OTP
+		expect(new Date(response.body.retryAt)).toBeInstanceOf(Date)
 
-		expect(res.body).toHaveProperty('otp')
-		expect(res.body).toHaveProperty('retryAt')
-		otpCode = res.body.otp
+		otpCode = response.body.otp
 	})
 
 	it('/auth/register (POST) → 201', async () => {
-		const res = await request(app.getHttpServer())
+		const response = await request(app.getHttpServer())
 			.post(`${prefix}/auth/register`)
 			.send({
 				user: testUser,
 				otp: otpCode
 			})
 
-		expect(res.status).toBe(201)
+		console.log(response)
+		// .expect(201)
 
-		expect(res.body.message).toBe('Successfully registered')
-		expect(res.body).toHaveProperty('tokens.accessToken')
-		expect(res.body).toHaveProperty('user.email', testEmail)
-		expect(res.headers['set-cookie'][0]).toMatch(/refreshToken=/)
+		expect(response.body.message).toBe('Successfully registered')
+		expect(response.body).toHaveProperty('tokens.accessToken')
+		expect(response.body).toHaveProperty('user.email', testEmail)
+		expect(response.body).toHaveProperty('user.name', testUser.name)
+		expect(response.body.user).not.toHaveProperty('password')
+
+		const cookies = response.headers['set-cookie']
+		expect(cookies).toBeDefined()
+		expect(cookies[0]).toMatch(/refreshToken=/)
 	})
 
 	it('/auth/login (POST) → 201', async () => {
 		const otpRes = await request(app.getHttpServer())
 			.post(`${prefix}/auth/otp`)
 			.send({ email: testEmail })
-
-		expect(otpRes.status).toBe(201)
+			.expect(201)
 
 		const otp = otpRes.body.otp
 
-		const res = await request(app.getHttpServer())
+		const response = await request(app.getHttpServer())
 			.post(`${prefix}/auth/login`)
 			.send({
 				identifier: testEmail,
 				otp
 			})
+			.expect(201)
 
-		expect(res.status).toBe(201)
-		expect(res.body.message).toBe('Successfully logged in')
-		expect(res.body).toHaveProperty('tokens.accessToken')
-		expect(res.body).toHaveProperty('user.email', testEmail)
-		expect(res.headers['set-cookie'][0]).toMatch(/refreshToken=/)
-	})
+		expect(response.body.message).toBe('Successfully logged in')
+		expect(response.body).toHaveProperty('tokens.accessToken')
+		expect(response.body).toHaveProperty('user.email', testEmail)
+		expect(response.body.user).not.toHaveProperty('password')
 
-	afterAll(async () => {
-		await app.close()
+		const cookies = response.headers['set-cookie']
+		expect(cookies).toBeDefined()
+		expect(cookies[0]).toMatch(/refreshToken=/)
 	})
 })

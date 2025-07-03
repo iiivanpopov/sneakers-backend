@@ -18,14 +18,13 @@
 		"forceConsistentCasingInFileNames": false,
 		"noFallthroughCasesInSwitch": false,
 		"paths": {
-			"@/*": ["src/*"],
 			"@generated/*": ["generated/*"],
-			"@app/prisma": ["src/modules/prisma/prisma.module.ts"],
-			"@app/prisma/*": ["src/modules/prisma/*"],
-			"@app/auth": ["src/modules/auth/auth.module.ts"],
-			"@app/auth/*": ["src/modules/auth/*"],
-			"@app/token": ["src/modules/token/token.module.ts"],
-			"@app/token/*": ["src/modules/token/*"]
+			"@/shared/*": ["src/shared/*"],
+			"@/config/*": ["src/shared/config/*"],
+			"@/constants/*": ["src/shared/constants/*"],
+			"@/prisma/*": ["src/modules/prisma/*"],
+			"@/auth/*": ["src/modules/auth/*"],
+			"@/token/*": ["src/modules/token/*"]
 		}
 	}
 }

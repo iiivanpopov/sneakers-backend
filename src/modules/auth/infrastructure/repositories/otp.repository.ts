@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { Redis } from 'ioredis'
 
-import { REDIS_KEYS } from '../../constants/keys'
+import { REDIS_KEYS } from '@/constants/keys'
 
 @Injectable()
-export class OtpRepository {
+export class OTPRepository {
 	constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {}
 
 	async get(email: string) {

@@ -9,13 +9,12 @@
 	"testEnvironment": "node",
 	"preset": "ts-jest",
 	"moduleNameMapper": {
-		"^@/(.*)$": "<rootDir>/src/$1",
 		"^@generated/(.*)$": "<rootDir>/generated/$1",
-		"^@app/prisma$": "<rootDir>/src/modules/prisma/prisma.module.ts",
-		"^@app/prisma/(.*)$": "<rootDir>/src/modules/prisma/$1",
-		"^@app/auth$": "<rootDir>/src/modules/auth/auth.module.ts",
-		"^@app/auth/(.*)$": "<rootDir>/src/modules/auth/$1",
-		"^@app/token$": "<rootDir>/src/modules/token/token.module.ts",
-		"^@app/token/(.*)$": "<rootDir>/src/modules/token/$1"
+		"^@/shared/(.*)$": "<rootDir>/src/shared/$1",
+		"^@/config/(.*)$": "<rootDir>/src/shared/config/$1",
+		"^@/constants/(.*)$": "<rootDir>/src/shared/constants/$1",
+		"^@/prisma/(.*)$": "<rootDir>/src/modules/prisma/$1",
+		"^@/auth/(.*)$": "<rootDir>/src/modules/auth/$1",
+		"^@/token/(.*)$": "<rootDir>/src/modules/token/$1"
 	}
 }

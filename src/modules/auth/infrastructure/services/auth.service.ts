@@ -2,24 +2,26 @@ import { randomInt } from 'crypto'
 
 import { Injectable } from '@nestjs/common'
 
-import { BadOtp } from '../../exceptions/bad-otp.exception'
-import { MissingRefreshToken } from '../../exceptions/missing-refresh-token.exception'
-import { MultipleUsers } from '../../exceptions/multiple-users.exception'
-import { OtpNotFound } from '../../exceptions/otp-not-found.exception'
-import { UserAlreadyExists } from '../../exceptions/user-exists.exception'
-import { UserNotFound } from '../../exceptions/user-not-found.exception'
 import { LoginDto } from '../../presentation/dto/login.dto'
 import { RegisterDto } from '../../presentation/dto/register.dto'
-import { OtpRepository } from '../repositories/otp.repository'
+import { OTPRepository } from '../repositories/otp.repository'
 import { UserRepository } from '../repositories/user.repository'
 
-import { TokenService } from '@/modules/token/infrastructure/services/token.service'
+import {
+	UserAlreadyExists,
+	BadOTP,
+	UserNotFound,
+	MissingRefreshToken,
+	MultipleUsers,
+	OTPNotFound
+} from '@/auth/exceptions'
+import { TokenService } from '@/token/infrastructure/services/token.service'
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private readonly userRepository: UserRepository,
-		private readonly otpRepository: OtpRepository,
+		private readonly otpRepository: OTPRepository,
 		private readonly tokenService: TokenService
 	) {}
 
@@ -28,7 +30,7 @@ export class AuthService {
 		if (exists) throw new UserAlreadyExists()
 
 		const confirmed = await this.otpRepository.confirm(user.email, otp)
-		if (!confirmed) throw new BadOtp()
+		if (!confirmed) throw new BadOTP()
 
 		const created = await this.userRepository.create(user)
 		const tokens = await this.tokenService.generateTokens(created)
@@ -39,7 +41,7 @@ export class AuthService {
 	async login({ otp, identifier }: LoginDto) {
 		const email = await this.resolveIdentifier(identifier)
 		const confirmed = await this.otpRepository.confirm(email, otp)
-		if (!confirmed) throw new BadOtp()
+		if (!confirmed) throw new BadOTP()
 
 		const user = await this.userRepository.findByEmail(email)
 		if (!user) throw new UserNotFound()
@@ -48,14 +50,14 @@ export class AuthService {
 		return { user, tokens }
 	}
 
-	async getOtp(identifier: string) {
+	async getOTP(identifier: string) {
 		const email = await this.resolveIdentifier(identifier)
 
 		const existing = await this.otpRepository.get(email)
 		if (existing) return existing
 
-		const newOtp = randomInt(100000, 1000000).toString()
-		return this.otpRepository.set(email, newOtp)
+		const newOTP = randomInt(100000, 1000000).toString()
+		return this.otpRepository.set(email, newOTP)
 	}
 
 	async logout(refreshToken: string) {
@@ -83,13 +85,13 @@ export class AuthService {
 		const candidates: string[] = []
 
 		for (const user of users) {
-			const hasOtp = await this.otpRepository.exists(user.email)
-			if (hasOtp) candidates.push(user.email)
+			const hasOTP = await this.otpRepository.exists(user.email)
+			if (hasOTP) candidates.push(user.email)
 		}
 
 		if (candidates.length === 1) return candidates[0]
 		if (candidates.length > 1) throw new MultipleUsers()
 
-		throw new OtpNotFound()
+		throw new OTPNotFound()
 	}
 }

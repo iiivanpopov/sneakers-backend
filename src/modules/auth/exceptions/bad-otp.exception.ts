@@ -1,6 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common'
 
-export class BadOtp extends UnauthorizedException {
+export class BadOTP extends UnauthorizedException {
 	constructor(message = 'Bad otp code') {
 		super(message)
 	}

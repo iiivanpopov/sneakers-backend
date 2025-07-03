@@ -1,25 +1,31 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common'
+import { Body, Controller, Inject, Post, Req, Res } from '@nestjs/common'
+import { ConfigType } from '@nestjs/config'
 import { Request, Response } from 'express'
 
-import { CONFIG } from '../../constants/config'
-import { COOKIES_KEYS } from '../../constants/keys'
 import { AuthService } from '../../infrastructure/services/auth.service'
-import { GetOtpDto } from '../dto/get-otp.dto'
+import { GetOTPDto } from '../dto/get-otp.dto'
 import { LoginDto } from '../dto/login.dto'
 import { RegisterDto } from '../dto/register.dto'
 
+import configuration from '@/shared/config'
+import { COOKIES_KEYS } from '@/shared/constants/keys'
+
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		@Inject(configuration.KEY)
+		private readonly config: ConfigType<typeof configuration>
+	) {}
 
 	@Post('otp')
-	async otp(@Body() body: GetOtpDto) {
-		const otp = await this.authService.getOtp(body.email)
+	async otp(@Body() body: GetOTPDto) {
+		const otp = await this.authService.getOTP(body.email)
 
 		return {
-			message: 'Otp generated',
+			message: 'OTP generated',
 			otp,
-			retryAt: Date.now() + CONFIG.retryDelay * 1000
+			retryAt: Date.now() + this.config.otp.retryDelay * 1000
 		}
 	}
 
@@ -31,7 +37,7 @@ export class AuthController {
 		const data = await this.authService.register(body)
 
 		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
-			maxAge: parseInt(process.env.COOKIE_TTL),
+			maxAge: this.config.jwt.refreshCookieTTL,
 			httpOnly: true,
 			secure: true,
 			sameSite: 'none'
@@ -48,7 +54,7 @@ export class AuthController {
 		const data = await this.authService.login(body)
 
 		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
-			maxAge: parseInt(process.env.COOKIE_TTL),
+			maxAge: this.config.jwt.refreshCookieTTL,
 			httpOnly: true,
 			secure: true,
 			sameSite: 'none'
@@ -81,7 +87,7 @@ export class AuthController {
 		const data = await this.authService.refresh(refreshToken)
 
 		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
-			maxAge: parseInt(process.env.COOKIE_TTL),
+			maxAge: this.config.jwt.refreshCookieTTL,
 			httpOnly: true,
 			secure: true,
 			sameSite: 'none'

@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common'
 
-export class OtpNotFound extends NotFoundException {
-	constructor(message = 'Otp not found') {
+export class OTPNotFound extends NotFoundException {
+	constructor(message = 'OTP not found') {
 		super(message)
 	}
 }
