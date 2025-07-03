@@ -74,10 +74,5 @@
 			"bun lint",
 			"bun format"
 		]
-	},
-	"jest": {
-		"setupFiles": [
-			"dotenv/config"
-		]
 	}
 }

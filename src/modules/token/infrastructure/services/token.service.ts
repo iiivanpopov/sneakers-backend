@@ -39,4 +39,8 @@ export class TokenService {
 			secret: process.env.JWT_ACCESS_SECRET
 		})
 	}
+
+	async deleteToken(refreshToken: string) {
+		await this.tokenRepository.deleteToken(refreshToken)
+	}
 }

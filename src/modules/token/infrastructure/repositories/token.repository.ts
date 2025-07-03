@@ -17,4 +17,8 @@ export class TokenRepository {
 			}
 		})
 	}
+
+	async deleteToken(refreshToken: string) {
+		await this.prisma.token.delete({ where: { refreshToken } })
+	}
 }

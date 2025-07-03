@@ -1,7 +1,8 @@
-import { Body, Controller, Post, Res } from '@nestjs/common'
-import { Response } from 'express'
+import { Body, Controller, Post, Req, Res } from '@nestjs/common'
+import { Request, Response } from 'express'
 
 import { CONFIG } from '../../constants/config'
+import { COOKIES_KEYS } from '../../constants/keys'
 import { AuthService } from '../../infrastructure/services/auth.service'
 import { GetOtpDto } from '../dto/get-otp.dto'
 import { LoginDto } from '../dto/login.dto'
@@ -29,7 +30,12 @@ export class AuthController {
 	) {
 		const data = await this.authService.register(body)
 
-		response.cookie('refreshToken', data.tokens.refreshToken)
+		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
+			maxAge: parseInt(process.env.COOKIE_TTL),
+			httpOnly: true,
+			secure: true,
+			sameSite: 'none'
+		})
 
 		return { message: 'Successfully registered', ...data }
 	}
@@ -41,8 +47,46 @@ export class AuthController {
 	) {
 		const data = await this.authService.login(body)
 
-		response.cookie('refreshToken', data.tokens.refreshToken)
+		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
+			maxAge: parseInt(process.env.COOKIE_TTL),
+			httpOnly: true,
+			secure: true,
+			sameSite: 'none'
+		})
 
 		return { message: 'Successfully logged in', ...data }
+	}
+
+	@Post('logout')
+	async logout(
+		@Req() request: Request,
+		@Res({ passthrough: true }) response: Response
+	) {
+		const refreshToken = request.cookies[COOKIES_KEYS.refreshToken]
+
+		await this.authService.logout(refreshToken)
+
+		response.clearCookie(COOKIES_KEYS.refreshToken)
+
+		return { message: 'Successfully logged out' }
+	}
+
+	@Post('refresh')
+	async refresh(
+		@Req() request: Request,
+		@Res({ passthrough: true }) response: Response
+	) {
+		const refreshToken = request.cookies[COOKIES_KEYS.refreshToken]
+
+		const data = await this.authService.refresh(refreshToken)
+
+		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
+			maxAge: parseInt(process.env.COOKIE_TTL),
+			httpOnly: true,
+			secure: true,
+			sameSite: 'none'
+		})
+
+		return { message: 'Successfully refreshed tokens', ...data }
 	}
 }

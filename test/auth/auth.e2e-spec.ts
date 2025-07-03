@@ -1,8 +1,11 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
+import * as dotenv from 'dotenv'
 import * as request from 'supertest'
 
 import { AppModule } from '../../src/app.module'
+
+dotenv.config({ path: '../../.env.test.local' })
 
 describe('AuthController (e2e)', () => {
 	let app: INestApplication

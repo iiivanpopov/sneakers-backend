@@ -24,6 +24,10 @@ export class UserRepository {
 		return this.prisma.user.findUnique({ where: { email } })
 	}
 
+	async findByRefreshToken(refreshToken: string) {
+		return this.prisma.user.findFirst({ where: { token: { refreshToken } } })
+	}
+
 	async exists({ name, email }: FindUserPayload) {
 		return this.prisma.user.findFirst({
 			where: { OR: [{ email }, { name }] }

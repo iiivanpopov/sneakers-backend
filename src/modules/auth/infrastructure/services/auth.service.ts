@@ -3,6 +3,7 @@ import { randomInt } from 'crypto'
 import { Injectable } from '@nestjs/common'
 
 import { BadOtp } from '../../exceptions/bad-otp.exception'
+import { MissingRefreshToken } from '../../exceptions/missing-refresh-token.exception'
 import { MultipleUsers } from '../../exceptions/multiple-users.exception'
 import { OtpNotFound } from '../../exceptions/otp-not-found.exception'
 import { UserAlreadyExists } from '../../exceptions/user-exists.exception'
@@ -55,6 +56,22 @@ export class AuthService {
 
 		const newOtp = randomInt(100000, 1000000).toString()
 		return this.otpRepository.set(email, newOtp)
+	}
+
+	async logout(refreshToken: string) {
+		if (!refreshToken) throw new MissingRefreshToken()
+
+		await this.tokenService.deleteToken(refreshToken)
+	}
+
+	async refresh(refreshToken: string) {
+		if (!refreshToken) throw new MissingRefreshToken()
+
+		const user = await this.userRepository.findByRefreshToken(refreshToken)
+		if (!user) throw new UserNotFound()
+		const tokens = await this.tokenService.generateTokens(user)
+
+		return { user, tokens }
 	}
 
 	private async resolveIdentifier(identifier: string): Promise<string> {

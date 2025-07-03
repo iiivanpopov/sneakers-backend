@@ -1,6 +1,6 @@
 model Token {
   id           String   @id @default(cuid())
-  refreshToken String   @map("refresh_token")
+  refreshToken String   @unique @map("refresh_token")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
   userId       String   @unique @map("user_id")
