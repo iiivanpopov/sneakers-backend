@@ -6,7 +6,6 @@ import { JwtService } from '@nestjs/jwt'
 import { TokenRepository } from '../repositories/token.repository'
 
 import configuration from '@/shared/config'
-import { Tokens } from '@/token/entities/tokens'
 
 @Injectable()
 export class TokenService {
@@ -30,7 +29,7 @@ export class TokenService {
 
 		await this.tokenRepository.upsertToken(payload, refreshToken)
 
-		return new Tokens(accessToken, refreshToken)
+		return { accessToken, refreshToken }
 	}
 
 	verifyRefreshToken(token: string) {
