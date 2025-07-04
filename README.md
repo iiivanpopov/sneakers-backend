@@ -2,7 +2,14 @@
 
 ## WIP
 
+```text
+GET    /sneakers?offset=&limit=
+POST   /sneakers                  MANAGER
+```
+
 ## AUTH
+
+COMPLETED
 
 ```text
 POST   /auth/otp
@@ -15,6 +22,8 @@ POST   /auth/reset-password
 ```
 
 ## USERS
+
+COMPLETED
 
 ```text
 GET    /user

@@ -16,7 +16,7 @@ import {
 	MultipleUsers,
 	OTPNotFound,
 	BadPassword
-} from '@/auth/exceptions'
+} from '@/exceptions/index'
 import { TokenService } from '@/token/infrastructure/services/token.service'
 
 @Injectable()

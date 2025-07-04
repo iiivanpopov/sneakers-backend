@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 
-import { UserNotFound } from '../../exceptions/user-not-fount.exception'
 import { User } from '../entities/User'
 import { UpdateUserPayload } from '../interfaces/update-user-data'
 import { UpdateUserData } from '../interfaces/update-user-payload'
 import { UserRepository } from '../repositories/user.repository'
 
 import { hashPassword } from '@/auth/infrastructure/utils/password'
+import { UserNotFound } from '@/exceptions/index'
 
 @Injectable()
 export class UserService {

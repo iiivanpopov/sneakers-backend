@@ -20,6 +20,7 @@
 		"paths": {
 			"@generated/*": ["generated/*"],
 			"@/shared/*": ["src/shared/*"],
+			"@/exceptions/*": ["src/exceptions/*"],
 			"@/config/*": ["src/shared/config/*"],
 			"@/constants/*": ["src/shared/constants/*"],
 			"@/prisma/*": ["src/modules/prisma/*"],
