@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer'
 import { IsString, IsEmail, ValidateNested, IsNotEmpty } from 'class-validator'
 
-class UserDto {
+class UserDTO {
 	@IsString()
 	@IsNotEmpty()
 	@IsEmail()
@@ -22,8 +22,8 @@ class UserDto {
 
 export class RegisterDto {
 	@ValidateNested()
-	@Type(() => UserDto)
-	user: UserDto
+	@Type(() => UserDTO)
+	user: UserDTO
 
 	@IsString()
 	otp: string

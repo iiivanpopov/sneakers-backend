@@ -1,5 +1,20 @@
 # Endpoints
 
+## WIP
+
+```text
+AUTH
+POST   /auth/forgot-password
+POST   /auth/reset-password
+
+USER
+GET    /user
+PATCH  /user
+PATCH  /user/:id                  MANAGER
+GET    /user/:id                  MANAGER
+DELETE /user/:id                  MANAGER
+```
+
 ## AUTH
 
 ```text

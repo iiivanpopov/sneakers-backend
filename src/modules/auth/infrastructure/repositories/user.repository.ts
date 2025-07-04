@@ -1,8 +1,8 @@
+import { Prisma } from '@generated/prisma'
 import { Injectable } from '@nestjs/common'
 
 import { CreateUserPayload } from '../interfaces/create-user-payload'
 import { FindUniqueUserPayload } from '../interfaces/user-exists-payload'
-import { hashPassword } from '../utils/password'
 
 import { PrismaService } from '@/prisma/prisma.service'
 
@@ -10,16 +10,23 @@ import { PrismaService } from '@/prisma/prisma.service'
 export class UserRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create({ password, name, email, phone }: CreateUserPayload) {
-		const hash = await hashPassword(password)
-
+	async create(user: CreateUserPayload) {
 		return this.prisma.user.create({
-			data: {
-				name,
-				email,
-				phone,
-				hashPassword: hash
-			}
+			data: user
+		})
+	}
+
+	async startResetPassword(email: string) {
+		return this.prisma.user.update({
+			where: { email },
+			data: { isPasswordReset: true }
+		})
+	}
+
+	async resetPassword(email: string, hashPassword: string) {
+		return this.prisma.user.update({
+			where: { email },
+			data: { isPasswordReset: false, hashPassword }
 		})
 	}
 
@@ -27,8 +34,8 @@ export class UserRepository {
 		return this.prisma.user.findMany({ where: { name } })
 	}
 
-	async findByEmail(email: string) {
-		return this.prisma.user.findUnique({ where: { email } })
+	async findByEmail(email: string, params: Prisma.UserWhereInput = {}) {
+		return this.prisma.user.findFirst({ where: { ...params, email } })
 	}
 
 	async findByRefreshToken(refreshToken: string) {

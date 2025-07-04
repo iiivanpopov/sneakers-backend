@@ -3,9 +3,11 @@ import { ConfigType } from '@nestjs/config'
 import { Request, Response } from 'express'
 
 import { AuthService } from '../../infrastructure/services/auth.service'
-import { GetOTPDto } from '../dto/get-otp.dto'
-import { LoginDto } from '../dto/login.dto'
+import { ForgotPasswordDTO } from '../dto/forgot-password.dto'
+import { GetOTPDTO } from '../dto/get-otp.dto'
+import { LoginDTO } from '../dto/login.dto'
 import { RegisterDto } from '../dto/register.dto'
+import { ResetPasswordDTO } from '../dto/reset-password.dto'
 
 import configuration from '@/shared/config'
 import { COOKIES_KEYS } from '@/shared/constants/keys'
@@ -19,7 +21,7 @@ export class AuthController {
 	) {}
 
 	@Post('otp')
-	async otp(@Body() body: GetOTPDto) {
+	async otp(@Body() body: GetOTPDTO) {
 		const otp = await this.authService.getOTP(body.email)
 
 		return {
@@ -48,7 +50,7 @@ export class AuthController {
 
 	@Post('login')
 	async login(
-		@Body() body: LoginDto,
+		@Body() body: LoginDTO,
 		@Res({ passthrough: true }) response: Response
 	) {
 		const data = await this.authService.login(body)
@@ -94,5 +96,19 @@ export class AuthController {
 		})
 
 		return { message: 'Successfully refreshed tokens', ...data }
+	}
+
+	@Post('forgot-password')
+	async forgotPassword(@Body() body: ForgotPasswordDTO) {
+		const otp = await this.authService.requestPasswordReset(body.email)
+
+		return { message: 'Password reset requested successfully', otp }
+	}
+
+	@Post('password-reset')
+	async passwordReset(@Body() body: ResetPasswordDTO) {
+		await this.authService.resetPassword(body.email, body.otp, body.password)
+
+		return { message: 'Password reset successfully' }
 	}
 }

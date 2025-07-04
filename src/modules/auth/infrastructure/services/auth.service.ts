@@ -1,13 +1,12 @@
-import { randomInt } from 'crypto'
-
 import { Injectable } from '@nestjs/common'
 
-import { LoginDto } from '../../presentation/dto/login.dto'
+import { LoginDTO } from '../../presentation/dto/login.dto'
 import { RegisterDto } from '../../presentation/dto/register.dto'
 import { User } from '../entities/User'
+import { CreateUserPayload } from '../interfaces/create-user-payload'
 import { OTPRepository } from '../repositories/otp.repository'
 import { UserRepository } from '../repositories/user.repository'
-import { verifyPassword } from '../utils/password'
+import { hashPassword, verifyPassword } from '../utils/password'
 
 import {
 	UserAlreadyExists,
@@ -35,7 +34,15 @@ export class AuthService {
 		const confirmedOTP = await this.otpRepository.confirm(user.email, otp)
 		if (!confirmedOTP) throw new BadOTP()
 
-		const created = await this.userRepository.create(user)
+		const hash = await hashPassword(user.password)
+		const userData: CreateUserPayload = {
+			hashPassword: hash,
+			email: user.email,
+			name: user.name,
+			phone: user.phone
+		}
+
+		const created = await this.userRepository.create(userData)
 		const tokens = await this.tokenService.generateTokens(created)
 
 		return {
@@ -44,7 +51,7 @@ export class AuthService {
 		}
 	}
 
-	async login({ otp, identifier, password }: LoginDto) {
+	async login({ otp, identifier, password }: LoginDTO) {
 		const email = await this.resolveIdentifier(identifier)
 
 		const confirmedOTP = await this.otpRepository.confirm(email, otp)
@@ -67,12 +74,7 @@ export class AuthService {
 	async getOTP(identifier: string) {
 		const email = await this.resolveIdentifier(identifier)
 
-		const existing = await this.otpRepository.get(email)
-		if (existing) return existing
-
-		const newOTP = randomInt(100000, 1000000).toString()
-
-		return this.otpRepository.set(email, newOTP)
+		return this.otpRepository.requestOTP(email)
 	}
 
 	async logout(refreshToken: string) {
@@ -93,6 +95,27 @@ export class AuthService {
 			user: new User(user.email, user.name, user.phone, user.role),
 			tokens
 		}
+	}
+
+	async requestPasswordReset(email: string) {
+		const otp = await this.otpRepository.requestOTP(email)
+
+		await this.userRepository.startResetPassword(email)
+
+		return otp
+	}
+
+	async resetPassword(email: string, otp: string, newPassword: string) {
+		const valid = await this.otpRepository.confirm(email, otp)
+		if (!valid) throw new BadOTP()
+
+		const user = await this.userRepository.findByEmail(email, {
+			isPasswordReset: true
+		})
+		if (!user) throw new UserNotFound()
+
+		const hash = await hashPassword(newPassword)
+		await this.userRepository.resetPassword(email, hash)
 	}
 
 	private async resolveIdentifier(identifier: string): Promise<string> {
