@@ -25,6 +25,7 @@ export class AuthController {
 		const otp = await this.authService.getOTP(body.email)
 
 		return {
+			success: true,
 			message: 'OTP generated',
 			otp,
 			retryAt: Date.now() + this.config.otp.retryDelay * 1000
@@ -45,7 +46,7 @@ export class AuthController {
 			sameSite: 'none'
 		})
 
-		return { message: 'Successfully registered', ...data }
+		return { success: true, message: 'Successfully registered', ...data }
 	}
 
 	@Post('login')
@@ -62,7 +63,7 @@ export class AuthController {
 			sameSite: 'none'
 		})
 
-		return { message: 'Successfully logged in', ...data }
+		return { success: true, message: 'Successfully logged in', ...data }
 	}
 
 	@Post('logout')
@@ -76,7 +77,7 @@ export class AuthController {
 
 		response.clearCookie(COOKIES_KEYS.refreshToken)
 
-		return { message: 'Successfully logged out' }
+		return { success: true, message: 'Successfully logged out' }
 	}
 
 	@Post('refresh')
@@ -95,20 +96,24 @@ export class AuthController {
 			sameSite: 'none'
 		})
 
-		return { message: 'Successfully refreshed tokens', ...data }
+		return { success: true, message: 'Successfully refreshed tokens', ...data }
 	}
 
 	@Post('forgot-password')
 	async forgotPassword(@Body() body: ForgotPasswordDTO) {
 		const otp = await this.authService.requestPasswordReset(body.email)
 
-		return { message: 'Password reset requested successfully', otp }
+		return {
+			success: true,
+			message: 'Password reset requested successfully',
+			otp
+		}
 	}
 
 	@Post('password-reset')
 	async passwordReset(@Body() body: ResetPasswordDTO) {
 		await this.authService.resetPassword(body.email, body.otp, body.password)
 
-		return { message: 'Password reset successfully' }
+		return { success: true, message: 'Password reset successfully' }
 	}
 }

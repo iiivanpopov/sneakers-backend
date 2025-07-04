@@ -7,6 +7,6 @@ export class UserRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async findById(id: string) {
-		return this.prisma.user.findMany({ where: { id } })
+		return this.prisma.user.findUnique({ where: { id } })
 	}
 }

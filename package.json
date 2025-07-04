@@ -6,6 +6,7 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
+		"prisma:push": "bun prisma db push --schema=./prisma/schema",
 		"build": "nest build",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
 		"start": "nest start",

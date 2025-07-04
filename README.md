@@ -2,16 +2,6 @@
 
 ## WIP
 
-```text
-USER
-GET    /user
-PATCH  /user
-
-PATCH  /user/:id                  MANAGER
-GET    /user/:id                  MANAGER
-DELETE /user/:id                  MANAGER
-```
-
 ## AUTH
 
 ```text
