@@ -16,18 +16,24 @@ export class TokenService {
 		private readonly config: ConfigType<typeof configuration>
 	) {}
 
-	async generateTokens(payload: User) {
-		const accessToken = this.jwt.sign(payload, {
-			secret: this.config.jwt.jwtAccessSecret,
-			expiresIn: this.config.jwt.accessTTL
-		})
+	async generateTokens(user: User) {
+		const accessToken = this.jwt.sign(
+			{ sub: user.id },
+			{
+				secret: this.config.jwt.jwtAccessSecret,
+				expiresIn: this.config.jwt.accessTTL
+			}
+		)
 
-		const refreshToken = this.jwt.sign(payload, {
-			secret: this.config.jwt.jwtRefreshSecret,
-			expiresIn: this.config.jwt.refreshTTL
-		})
+		const refreshToken = this.jwt.sign(
+			{ sub: user.id },
+			{
+				secret: this.config.jwt.jwtRefreshSecret,
+				expiresIn: this.config.jwt.refreshTTL
+			}
+		)
 
-		await this.tokenRepository.upsertToken(payload, refreshToken)
+		await this.tokenRepository.upsertToken(user, refreshToken)
 
 		return { accessToken, refreshToken }
 	}
