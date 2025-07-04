@@ -36,8 +36,8 @@ export class OTPRepository {
 	}
 
 	async confirm(email: string, otp: string) {
-		const stored = await this.redisService.get(REDIS_KEYS.OTP(email))
-		if (stored === otp) {
+		const stored = await this.get(email)
+		if (stored == otp) {
 			await this.redisService.del(REDIS_KEYS.OTP(email))
 			return true
 		}

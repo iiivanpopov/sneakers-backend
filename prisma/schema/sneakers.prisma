@@ -20,7 +20,7 @@ model Sneaker {
   sneakerModelId String       @map("sneaker_model_id")
   sneakerModel   SneakerModel @relation(fields: [sneakerModelId], references: [id])
   size           Float
-  inStock        Int          @map("in_stock")
+  quantity       Int
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

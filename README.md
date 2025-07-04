@@ -3,8 +3,8 @@
 ## WIP
 
 ```text
-PATCH  /sneakers/:id              MANAGER
-DELETE /sneakers/:id              MANAGER
+GET    /sneakers/:slug/stock                 + // get sizes, quantity
+POST   /sneakers/:slug/stock       MANAGER   + // create new sneaker (size + quantity)
 ```
 
 ## AUTH
@@ -38,20 +38,26 @@ DELETE /user/:id                  MANAGER
 WIP
 
 ```text
-GET    /sneakers?offset=&limit=
-GET    /sneakers/search?q=&offset=&limit=
-GET    /sneakers/popular
-GET    /sneakers/related/:id
+GET    /sneakers?offset=&limit=              *
+GET    /sneakers/search?q=&offset=&limit=    *
+GET    /sneakers/popular          
+GET    /sneakers/related/:slug
 GET    /sneakers/recommendations
-GET    /sneakers/brands
-POST   /sneakers                  MANAGER
+GET    /sneakers/brands                      +
+POST   /sneakers                    MANAGER  *
 
-GET    /sneakers/:id
-POST   /sneakers/:id/stock        MANAGER
-PATCH  /sneakers/:id              MANAGER
-DELETE /sneakers/:id              MANAGER
-POST   /sneakers/:id/images       MANAGER
-DELETE /sneakers/:id/images/:img  MANAGER
+GET    /sneakers/:slug                       *
+PATCH  /sneakers/:slug              MANAGER  *
+DELETE /sneakers/:slug              MANAGER  *
+POST   /sneakers/:slug/images       MANAGER  
+DELETE /sneakers/:slug/images/:img  MANAGER  
+
+GET    /sneakers/:slug/stock                 + // all sizes
+POST   /sneakers/:slug/stock       MANAGER   + // size + qty
+
+GET    /stock/:id                            +
+PATCH  /stock/:id                  MANAGER   + //  qty, size, priceOverride
+DELETE /stock/:id                  MANAGER   +
 ```
 
 ## PAYMENTS

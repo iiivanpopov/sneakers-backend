@@ -8,12 +8,16 @@ import {
 	DeleteSneakerModelHandler,
 	UpdateSneakerModelHandler
 } from './infrastructure/commands'
+import { CreateSneakerHandler } from './infrastructure/commands/handlers/create-sneaker.handler'
 import {
 	GetSneakerModelHandler,
 	GetSneakerModelsHandler,
 	SearchSneakerModelsHandler
 } from './infrastructure/queries'
-import { SneakersRepository } from './infrastructure/repositories/sneaker.repository'
+import { GetSneakersHandler } from './infrastructure/queries/handlers/get-sneakers.handler'
+import { SneakerModelsRepository } from './infrastructure/repositories/sneaker-models.repository'
+import { SneakersRepository } from './infrastructure/repositories/sneakers.repository'
+import { SneakersModelService } from './infrastructure/services/sneaker-models.service'
 import { SneakersService } from './infrastructure/services/sneakers.service'
 import { SneakersController } from './presentation/controllers/sneakers.controller'
 
@@ -22,14 +26,21 @@ import { PrismaModule } from '@/prisma/prisma.module'
 @Module({
 	imports: [CqrsModule, PrismaModule, RedisModule],
 	providers: [
+		SneakersService,
+		SneakersModelService,
+
 		SneakersRepository,
-		CreateSneakerModelHandler,
+		SneakerModelsRepository,
+
 		SearchSneakerModelsHandler,
 		GetSneakerModelsHandler,
+		GetSneakersHandler,
 		GetSneakerModelHandler,
+
 		UpdateSneakerModelHandler,
 		DeleteSneakerModelHandler,
-		SneakersService
+		CreateSneakerHandler,
+		CreateSneakerModelHandler
 	],
 	controllers: [SneakersController]
 })

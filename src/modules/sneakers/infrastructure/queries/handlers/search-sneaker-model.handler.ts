@@ -1,13 +1,13 @@
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs'
 
-import { SneakersRepository } from '../../repositories/sneaker.repository'
+import { SneakerModelsRepository } from '../../repositories/sneaker-models.repository'
 import { SearchSneakersQuery } from '../search-sneakers.query'
 
 @QueryHandler(SearchSneakersQuery)
 export class SearchSneakerModelsHandler
 	implements IQueryHandler<SearchSneakersQuery>
 {
-	constructor(private readonly sneakersRepository: SneakersRepository) {}
+	constructor(private readonly sneakersRepository: SneakerModelsRepository) {}
 
 	async execute(query: SearchSneakersQuery) {
 		const { offset, limit, search } = query

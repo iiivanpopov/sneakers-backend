@@ -1,7 +1,7 @@
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs'
 import { RedisService } from 'src/modules/redis/redis.service'
 
-import { SneakersRepository } from '../../repositories/sneaker.repository'
+import { SneakerModelsRepository } from '../../repositories/sneaker-models.repository'
 import { GetSneakerModelQuery } from '../get-sneaker-model.query'
 
 import { SneakerModelNotFound } from '@/exceptions/sneakers/sneaker-model-not-found.exception'
@@ -11,7 +11,7 @@ export class GetSneakerModelHandler
 	implements IQueryHandler<GetSneakerModelQuery>
 {
 	constructor(
-		private readonly sneakersRepository: SneakersRepository,
+		private readonly sneakersRepository: SneakerModelsRepository,
 		private readonly redisService: RedisService
 	) {}
 

@@ -47,7 +47,8 @@ export class ExceptionsFilter implements ExceptionFilter {
 			error,
 			reason,
 			path: request.url,
-			timestamp
+			timestamp,
+			success: false
 		})
 	}
 }

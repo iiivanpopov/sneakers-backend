@@ -7,7 +7,7 @@ import { UpdateSneakerModelPayload } from '../../domain/interfaces/update-sneake
 import { PrismaService } from '@/prisma/prisma.service'
 
 @Injectable()
-export class SneakersRepository {
+export class SneakerModelsRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async findMany(args: Partial<Prisma.SneakerModelFindManyArgs>) {
@@ -32,7 +32,7 @@ export class SneakersRepository {
 					select: {
 						id: true,
 						size: true,
-						inStock: true
+						quantity: true
 					}
 				}
 			}

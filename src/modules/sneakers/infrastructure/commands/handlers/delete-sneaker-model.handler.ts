@@ -1,7 +1,7 @@
 import { SneakerModel } from '@generated/prisma'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 
-import { SneakersRepository } from '../../repositories/sneaker.repository'
+import { SneakerModelsRepository } from '../../repositories/sneaker-models.repository'
 import { DeleteSneakerModelCommand } from '../delete-sneaker-model.command'
 
 import { SneakerModelNotFound } from '@/exceptions/sneakers/sneaker-model-not-found.exception'
@@ -10,7 +10,7 @@ import { SneakerModelNotFound } from '@/exceptions/sneakers/sneaker-model-not-fo
 export class DeleteSneakerModelHandler
 	implements ICommandHandler<DeleteSneakerModelCommand>
 {
-	constructor(private readonly sneakersRepository: SneakersRepository) {}
+	constructor(private readonly sneakersRepository: SneakerModelsRepository) {}
 	async execute(command: DeleteSneakerModelCommand): Promise<SneakerModel> {
 		const exists = await this.sneakersRepository.sneakerModelExistsBySlug(
 			command.slug

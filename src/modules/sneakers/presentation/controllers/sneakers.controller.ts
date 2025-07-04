@@ -11,8 +11,10 @@ import {
 	UseGuards
 } from '@nestjs/common'
 
+import { SneakersModelService } from '../../infrastructure/services/sneaker-models.service'
 import { SneakersService } from '../../infrastructure/services/sneakers.service'
 import { CreateSneakerModelDTO } from '../dto/create-sneaker-model.dto'
+import { CreateSneakerDTO } from '../dto/create-sneaker.dto'
 import { UpdateSneakerModelDTO } from '../dto/update-sneaker-model.dto'
 
 import { Roles } from '@/shared/decorators/roles.decorator'
@@ -21,11 +23,17 @@ import { JwtAuthGuard } from '@/token/jwt/jwt.guard'
 
 @Controller('/sneakers')
 export class SneakersController {
-	constructor(private readonly sneakersService: SneakersService) {}
+	constructor(
+		private readonly sneakersModelService: SneakersModelService,
+		private readonly sneakersService: SneakersService
+	) {}
 
 	@Get()
-	async getSneakers(@Query('offset') offset = 0, @Query('limit') limit = 10) {
-		const data = await this.sneakersService.getSneakers(
+	async getSneakerModels(
+		@Query('offset') offset = 0,
+		@Query('limit') limit = 10
+	) {
+		const data = await this.sneakersModelService.getSneakers(
 			Number(offset),
 			Number(limit)
 		)
@@ -34,19 +42,19 @@ export class SneakersController {
 	}
 
 	@Get('/:slug')
-	async getSneaker(@Param('slug') slug) {
-		const data = await this.sneakersService.getSneakerBySlug(slug)
+	async getSneakerModel(@Param('slug') slug) {
+		const data = await this.sneakersModelService.getSneakerBySlug(slug)
 
 		return { message: 'Fetched sneaker successfully', sneaker: data }
 	}
 
 	@Get('/search')
-	async searchSneakers(
+	async searchSneakerModels(
 		@Query('offset') offset = 0,
 		@Query('limit') limit = 10,
 		@Query('q') search: string
 	) {
-		const data = await this.sneakersService.searchSneakers(
+		const data = await this.sneakersModelService.searchSneakers(
 			Number(offset),
 			Number(limit),
 			search
@@ -59,7 +67,7 @@ export class SneakersController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles([Role.MANAGER, Role.ADMIN])
 	async createSneakerModel(@Body() body: CreateSneakerModelDTO) {
-		const data = await this.sneakersService.createSneakerModel(body)
+		const data = await this.sneakersModelService.createSneakerModel(body)
 
 		return {
 			message: 'Created sneaker model successfully',
@@ -72,7 +80,7 @@ export class SneakersController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles([Role.MANAGER, Role.ADMIN])
 	async deleteSneakerModel(@Param('slug') slug: string) {
-		const data = await this.sneakersService.deleteSneakerModel(slug)
+		const data = await this.sneakersModelService.deleteSneakerModel(slug)
 
 		return {
 			message: 'Deleted sneaker model successfully',
@@ -88,10 +96,36 @@ export class SneakersController {
 		@Param('slug') slug: string,
 		@Body() body: UpdateSneakerModelDTO
 	) {
-		const data = await this.sneakersService.updateSneakerModel(slug, body)
+		const data = await this.sneakersModelService.updateSneakerModel(slug, body)
 
 		return {
 			message: 'Deleted sneaker model successfully',
+			sneaker: data,
+			success: true
+		}
+	}
+
+	@Get('/:slug/stock')
+	async getSneakers(@Param('slug') slug: string) {
+		const data = await this.sneakersService.getSneakers(slug)
+
+		return {
+			message: 'Fetched sneakers successfully',
+			sneaker: data
+		}
+	}
+
+	@Post('/:slug/stock')
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles([Role.MANAGER, Role.ADMIN])
+	async createSneaker(
+		@Param('slug') slug: string,
+		@Body() body: CreateSneakerDTO
+	) {
+		const data = await this.sneakersService.createSneaker(slug, body)
+
+		return {
+			message: 'Created sneaker successfully',
 			sneaker: data,
 			success: true
 		}
