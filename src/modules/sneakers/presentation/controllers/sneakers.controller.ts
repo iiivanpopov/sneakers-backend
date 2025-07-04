@@ -22,6 +22,21 @@ export class SneakersController {
 		return { message: 'Fetched sneakers successfully', sneakers: data }
 	}
 
+	@Get('/search')
+	async searchSneakers(
+		@Query('offset') offset = 0,
+		@Query('limit') limit = 10,
+		@Query('q') search: string
+	) {
+		const data = await this.sneakersService.searchSneakers(
+			Number(offset),
+			Number(limit),
+			search
+		)
+
+		return { message: 'Fetched sneakers successfully', sneakers: data }
+	}
+
 	@Post()
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles([Role.MANAGER, Role.ADMIN])

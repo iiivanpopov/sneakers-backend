@@ -3,8 +3,7 @@
 ## WIP
 
 ```text
-GET    /sneakers?offset=&limit=
-POST   /sneakers                  MANAGER
+GET    /sneakers/search?q=&offset=&limit=
 ```
 
 ## AUTH
@@ -34,6 +33,8 @@ DELETE /user/:id                  MANAGER
 ```
 
 ## SNEAKERS
+
+WIP
 
 ```text
 GET    /sneakers?offset=&limit=

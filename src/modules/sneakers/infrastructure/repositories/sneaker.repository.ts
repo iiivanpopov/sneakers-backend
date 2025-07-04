@@ -17,21 +17,13 @@ export class SneakersRepository {
 				name: true,
 				brand: true,
 				price: true,
-				slug: true
+				slug: true,
+				imageUrl: true
 			}
 		})
 	}
 
-	async createSneakerModel(sneakerModel: CreateSneakerModelPayload) {
-		const data = {
-			...sneakerModel,
-			colorway: sneakerModel.colorway ?? null,
-			releaseAt: sneakerModel.releaseAt
-				? new Date(sneakerModel.releaseAt)
-				: null,
-			imageUrl: sneakerModel.imageUrl ?? null
-		}
-
+	async createSneakerModel(data: CreateSneakerModelPayload) {
 		return this.prisma.sneakerModel.create({ data })
 	}
 
