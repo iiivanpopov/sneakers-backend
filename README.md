@@ -3,7 +3,8 @@
 ## WIP
 
 ```text
-GET    /sneakers/search?q=&offset=&limit=
+PATCH  /sneakers/:id              MANAGER
+DELETE /sneakers/:id              MANAGER
 ```
 
 ## AUTH
@@ -46,11 +47,11 @@ GET    /sneakers/brands
 POST   /sneakers                  MANAGER
 
 GET    /sneakers/:id
+POST   /sneakers/:id/stock        MANAGER
 PATCH  /sneakers/:id              MANAGER
 DELETE /sneakers/:id              MANAGER
 POST   /sneakers/:id/images       MANAGER
 DELETE /sneakers/:id/images/:img  MANAGER
-POST   /sneakers/:id/stock        MANAGER
 ```
 
 ## PAYMENTS

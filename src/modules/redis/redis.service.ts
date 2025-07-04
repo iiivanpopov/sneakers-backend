@@ -9,6 +9,12 @@ export class RedisService {
 		await this.del(`${entity}:${JSON.stringify(params)}`)
 	}
 
+	async increment(key: string) {
+		const value = await this.get(key)
+		if (!value) return this.set(key, 1)
+		await this.set(key, value + 1)
+	}
+
 	async set(key: string, value: any, ttl?: number) {
 		const data = typeof value === 'string' ? value : JSON.stringify(value)
 		return ttl

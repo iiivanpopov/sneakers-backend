@@ -1,8 +1,19 @@
 import { Role } from '@generated/prisma'
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
+	Query,
+	UseGuards
+} from '@nestjs/common'
 
 import { SneakersService } from '../../infrastructure/services/sneakers.service'
 import { CreateSneakerModelDTO } from '../dto/create-sneaker-model.dto'
+import { UpdateSneakerModelDTO } from '../dto/update-sneaker-model.dto'
 
 import { Roles } from '@/shared/decorators/roles.decorator'
 import { RolesGuard } from '@/shared/guards/roles/roles.guard'
@@ -20,6 +31,13 @@ export class SneakersController {
 		)
 
 		return { message: 'Fetched sneakers successfully', sneakers: data }
+	}
+
+	@Get('/:slug')
+	async getSneaker(@Param('slug') slug) {
+		const data = await this.sneakersService.getSneakerBySlug(slug)
+
+		return { message: 'Fetched sneaker successfully', sneaker: data }
 	}
 
 	@Get('/search')
@@ -45,6 +63,35 @@ export class SneakersController {
 
 		return {
 			message: 'Created sneaker model successfully',
+			sneaker: data,
+			success: true
+		}
+	}
+
+	@Delete('/:slug')
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles([Role.MANAGER, Role.ADMIN])
+	async deleteSneakerModel(@Param('slug') slug: string) {
+		const data = await this.sneakersService.deleteSneakerModel(slug)
+
+		return {
+			message: 'Deleted sneaker model successfully',
+			sneaker: data,
+			success: true
+		}
+	}
+
+	@Patch('/:slug')
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles([Role.MANAGER, Role.ADMIN])
+	async updateSneakerModel(
+		@Param('slug') slug: string,
+		@Body() body: UpdateSneakerModelDTO
+	) {
+		const data = await this.sneakersService.updateSneakerModel(slug, body)
+
+		return {
+			message: 'Deleted sneaker model successfully',
 			sneaker: data,
 			success: true
 		}

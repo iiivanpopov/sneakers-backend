@@ -4,7 +4,7 @@ import { SneakersRepository } from '../../repositories/sneaker.repository'
 import { SearchSneakersQuery } from '../search-sneakers.query'
 
 @QueryHandler(SearchSneakersQuery)
-export class SearchSneakersHandler
+export class SearchSneakerModelsHandler
 	implements IQueryHandler<SearchSneakersQuery>
 {
 	constructor(private readonly sneakersRepository: SneakersRepository) {}
