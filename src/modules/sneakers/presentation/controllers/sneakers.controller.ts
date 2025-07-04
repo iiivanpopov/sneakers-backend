@@ -5,8 +5,8 @@ import { SneakersService } from '../../infrastructure/services/sneakers.service'
 import { CreateSneakerModelDTO } from '../dto/create-sneaker-model.dto'
 
 import { Roles } from '@/shared/decorators/roles.decorator'
-import { RolesGuard } from '@/shared/guards/roles.guard'
-import { JwtAuthGuard } from '@/token/jwt.guard'
+import { RolesGuard } from '@/shared/guards/roles/roles.guard'
+import { JwtAuthGuard } from '@/token/jwt/jwt.guard'
 
 @Controller('/sneakers')
 export class SneakersController {

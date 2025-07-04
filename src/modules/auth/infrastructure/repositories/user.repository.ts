@@ -1,8 +1,8 @@
 import { Prisma } from '@generated/prisma'
 import { Injectable } from '@nestjs/common'
 
-import { CreateUserPayload } from '../interfaces/create-user-payload'
-import { FindUniqueUserPayload } from '../interfaces/user-exists-payload'
+import { CreateUserPayload } from '../../domain/interfaces/create-user-payload'
+import { FindUniqueUserPayload } from '../../domain/interfaces/user-exists-payload'
 
 import { PrismaService } from '@/prisma/prisma.service'
 

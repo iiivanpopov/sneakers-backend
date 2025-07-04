@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 
+import { User } from '../../domain/entities/User'
+import { CreateUserPayload } from '../../domain/interfaces/create-user-payload'
 import { LoginDTO } from '../../presentation/dto/login.dto'
 import { RegisterDto } from '../../presentation/dto/register.dto'
-import { User } from '../entities/User'
-import { CreateUserPayload } from '../interfaces/create-user-payload'
 import { OTPRepository } from '../repositories/otp.repository'
 import { UserRepository } from '../repositories/user.repository'
 import { hashPassword, verifyPassword } from '../utils/password'

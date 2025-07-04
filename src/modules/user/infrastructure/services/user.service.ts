@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 
-import { User } from '../entities/User'
-import { UpdateUserPayload } from '../interfaces/update-user-data'
-import { UpdateUserData } from '../interfaces/update-user-payload'
+import { User } from '../../domain/entities/User'
+import { UpdateUserPayload } from '../../domain/interfaces/update-user-data'
+import { UpdateUserData } from '../../domain/interfaces/update-user-payload'
 import { UserRepository } from '../repositories/user.repository'
 
 import { hashPassword } from '@/auth/infrastructure/utils/password'

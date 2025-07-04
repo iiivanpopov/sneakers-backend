@@ -9,14 +9,14 @@ import {
 	UseGuards
 } from '@nestjs/common'
 
-import { User } from '../../infrastructure/entities/User'
+import { User } from '../../domain/entities/User'
 import { UserService } from '../../infrastructure/services/user.service'
 import { UpdateUserDTO } from '../dto/update-user.dto'
 
 import { CurrentUser } from '@/shared/decorators/current-user.decorator'
 import { Roles } from '@/shared/decorators/roles.decorator'
-import { RolesGuard } from '@/shared/guards/roles.guard'
-import { JwtAuthGuard } from '@/token/jwt.guard'
+import { RolesGuard } from '@/shared/guards/roles/roles.guard'
+import { JwtAuthGuard } from '@/token/jwt/jwt.guard'
 
 @Controller('user')
 @UseGuards(JwtAuthGuard, RolesGuard)
