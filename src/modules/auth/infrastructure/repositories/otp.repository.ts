@@ -1,16 +1,16 @@
 import { randomInt } from 'crypto'
 
-import { Inject, Injectable } from '@nestjs/common'
-import { Redis } from 'ioredis'
+import { Injectable } from '@nestjs/common'
+import { RedisService } from 'src/modules/redis/redis.service'
 
 import { REDIS_KEYS } from '@/constants/keys'
 
 @Injectable()
 export class OTPRepository {
-	constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {}
+	constructor(private readonly redisService: RedisService) {}
 
 	async get(email: string) {
-		return this.redis.get(REDIS_KEYS.OTP(email))
+		return this.redisService.get(REDIS_KEYS.OTP(email))
 	}
 
 	async requestOTP(email: string) {
@@ -27,18 +27,18 @@ export class OTPRepository {
 	}
 
 	async set(email: string, otp: string) {
-		await this.redis.set(REDIS_KEYS.OTP(email), otp, 'EX', 120)
+		await this.redisService.set(REDIS_KEYS.OTP(email), otp, 120)
 		return otp
 	}
 
 	async exists(email: string) {
-		return this.redis.exists(REDIS_KEYS.OTP(email))
+		return this.redisService.exists(REDIS_KEYS.OTP(email))
 	}
 
 	async confirm(email: string, otp: string) {
-		const stored = await this.redis.get(REDIS_KEYS.OTP(email))
+		const stored = await this.redisService.get(REDIS_KEYS.OTP(email))
 		if (stored === otp) {
-			await this.redis.del(REDIS_KEYS.OTP(email))
+			await this.redisService.del(REDIS_KEYS.OTP(email))
 			return true
 		}
 		return false

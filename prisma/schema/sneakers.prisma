@@ -1,0 +1,30 @@
+model SneakerModel {
+  id        String    @id @default(cuid())
+  name      String
+  brand     String
+  colorway  String?
+  releaseAt DateTime? @map("release_at")
+  imageUrl  String?   @map("image_url")
+  price     Decimal
+  slug      String    @unique
+  items     Sneaker[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("sneaker_model")
+}
+
+model Sneaker {
+  id             String       @id @default(cuid()) @map("id")
+  sneakerModelId String       @map("sneaker_model_id")
+  sneakerModel   SneakerModel @relation(fields: [sneakerModelId], references: [id])
+  size           Float
+  inStock        Int          @map("in_stock")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([sneakerModelId, size])
+  @@map("sneaker")
+}
