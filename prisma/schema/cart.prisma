@@ -1,0 +1,23 @@
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  @@map("cart")
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  sneakerId String
+  quantity  Int     @default(1)
+  size      Float
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  sneaker   Sneaker @relation(fields: [sneakerId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, sneakerId, size])
+  @@map("cart_item")
+}

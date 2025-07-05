@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { CartRepository } from 'src/modules/cart/repositories/cart.repository'
 
 import { User } from '../../domain/entities/User'
 import { CreateUserPayload } from '../../domain/interfaces/create-user-payload'
@@ -24,7 +25,8 @@ export class AuthService {
 	constructor(
 		private readonly userRepository: UserRepository,
 		private readonly otpRepository: OTPRepository,
-		private readonly tokenService: TokenService
+		private readonly tokenService: TokenService,
+		private readonly cartRepository: CartRepository
 	) {}
 
 	async register({ user, otp }: RegisterDto) {
@@ -44,6 +46,8 @@ export class AuthService {
 
 		const created = await this.userRepository.create(userData)
 		const tokens = await this.tokenService.generateTokens(created)
+
+		await this.cartRepository.createCart(created.id)
 
 		return {
 			user: new User(

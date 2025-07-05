@@ -3,11 +3,10 @@
 ## WIP
 
 ```text
-GET    /cart
-POST   /cart
-PATCH  /cart/:slug
-DELETE /cart/:slug
-DELETE /cart
+GET    /sneakers/:id/reviews
+POST   /sneakers/:id/reviews
+PATCH  /reviews/:id
+DELETE /reviews/:id 
 ```
 
 ## AUTH
@@ -73,6 +72,8 @@ DELETE /favorites/:slug
 
 ## CART
 
+COMPLETED
+
 ```text
 GET    /cart
 POST   /cart
@@ -82,6 +83,8 @@ DELETE /cart
 ```
 
 ## REVIEWS
+
+WIP
 
 ```text
 GET    /sneakers/:id/reviews

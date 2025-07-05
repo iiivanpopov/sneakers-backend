@@ -1,6 +1,7 @@
 import { Body, Controller, Inject, Post, Req, Res } from '@nestjs/common'
 import { ConfigType } from '@nestjs/config'
 import { Request, Response } from 'express'
+import configuration from 'src/config'
 
 import { AuthService } from '../../infrastructure/services/auth.service'
 import { ForgotPasswordDTO } from '../dto/forgot-password.dto'
@@ -9,7 +10,6 @@ import { LoginDTO } from '../dto/login.dto'
 import { RegisterDto } from '../dto/register.dto'
 import { ResetPasswordDTO } from '../dto/reset-password.dto'
 
-import configuration from '@/shared/config'
 import { COOKIES_KEYS } from '@/shared/constants/keys'
 
 @Controller('auth')
@@ -39,7 +39,7 @@ export class AuthController {
 	) {
 		const data = await this.authService.register(body)
 
-		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
+		response.cookie(COOKIES_KEYS.REFRESH_TOKEN, data.tokens.refreshToken, {
 			maxAge: this.config.jwt.refreshCookieTTL,
 			httpOnly: true,
 			secure: true,
@@ -56,7 +56,7 @@ export class AuthController {
 	) {
 		const data = await this.authService.login(body)
 
-		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
+		response.cookie(COOKIES_KEYS.REFRESH_TOKEN, data.tokens.refreshToken, {
 			maxAge: this.config.jwt.refreshCookieTTL,
 			httpOnly: true,
 			secure: true,
@@ -71,11 +71,11 @@ export class AuthController {
 		@Req() request: Request,
 		@Res({ passthrough: true }) response: Response
 	) {
-		const refreshToken = request.cookies[COOKIES_KEYS.refreshToken]
+		const refreshToken = request.cookies[COOKIES_KEYS.REFRESH_TOKEN]
 
 		await this.authService.logout(refreshToken)
 
-		response.clearCookie(COOKIES_KEYS.refreshToken)
+		response.clearCookie(COOKIES_KEYS.REFRESH_TOKEN)
 
 		return { success: true, message: 'Successfully logged out' }
 	}
@@ -85,11 +85,11 @@ export class AuthController {
 		@Req() request: Request,
 		@Res({ passthrough: true }) response: Response
 	) {
-		const refreshToken = request.cookies[COOKIES_KEYS.refreshToken]
+		const refreshToken = request.cookies[COOKIES_KEYS.REFRESH_TOKEN]
 
 		const data = await this.authService.refresh(refreshToken)
 
-		response.cookie(COOKIES_KEYS.refreshToken, data.tokens.refreshToken, {
+		response.cookie(COOKIES_KEYS.REFRESH_TOKEN, data.tokens.refreshToken, {
 			maxAge: this.config.jwt.refreshCookieTTL,
 			httpOnly: true,
 			secure: true,

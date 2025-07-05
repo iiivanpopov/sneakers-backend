@@ -19,12 +19,13 @@ model SneakerModel {
 model Sneaker {
   id             String       @id @default(cuid()) @map("id")
   sneakerModelId String       @map("sneaker_model_id")
-  sneakerModel   SneakerModel @relation(fields: [sneakerModelId], references: [id])
+  sneakerModel   SneakerModel @relation(fields: [sneakerModelId], references: [id], onDelete: Cascade)
   size           Float
   quantity       Int
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  cartItems CartItem[]
 
   @@unique([sneakerModelId, size])
   @@map("sneaker")

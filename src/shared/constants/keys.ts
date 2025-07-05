@@ -4,5 +4,5 @@ export const REDIS_KEYS = {
 } as const
 
 export const COOKIES_KEYS = {
-	refreshToken: 'refreshToken'
+	REFRESH_TOKEN: 'refreshToken'
 } as const

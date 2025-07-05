@@ -10,6 +10,7 @@ model User {
   updatedAt       DateTime       @updatedAt @map("updated_at")
   token           Token?
   favorites       SneakerModel[] @relation("UserFavorites")
+  cart            Cart?
 
   @@map("user")
 }

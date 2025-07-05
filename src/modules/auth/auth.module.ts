@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 
+import { CartRepository } from '../cart/repositories/cart.repository'
 import { RedisModule } from '../redis/redis.module'
 import { TokenModule } from '../token/token.module'
 
@@ -13,6 +14,6 @@ import { PrismaModule } from '@/prisma/prisma.module'
 @Module({
 	imports: [PrismaModule, RedisModule, TokenModule],
 	controllers: [AuthController],
-	providers: [AuthService, OTPRepository, UserRepository]
+	providers: [AuthService, OTPRepository, UserRepository, CartRepository]
 })
 export class AuthModule {}
