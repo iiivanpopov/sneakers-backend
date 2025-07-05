@@ -9,6 +9,7 @@ import {
 	UpdateSneakerModelHandler
 } from './infrastructure/commands'
 import { CreateSneakerHandler } from './infrastructure/commands/handlers/create-sneaker.handler'
+import { UpdateSneakersHandler } from './infrastructure/commands/handlers/update-sneakers.handler'
 import {
 	GetSneakerModelHandler,
 	GetSneakerModelsHandler,
@@ -19,6 +20,7 @@ import { SneakerModelsRepository } from './infrastructure/repositories/sneaker-m
 import { SneakersRepository } from './infrastructure/repositories/sneakers.repository'
 import { SneakersModelService } from './infrastructure/services/sneaker-models.service'
 import { SneakersService } from './infrastructure/services/sneakers.service'
+import { SneakerModelsController } from './presentation/controllers/sneaker-models.controller'
 import { SneakersController } from './presentation/controllers/sneakers.controller'
 
 import { PrismaModule } from '@/prisma/prisma.module'
@@ -40,8 +42,9 @@ import { PrismaModule } from '@/prisma/prisma.module'
 		UpdateSneakerModelHandler,
 		DeleteSneakerModelHandler,
 		CreateSneakerHandler,
-		CreateSneakerModelHandler
+		CreateSneakerModelHandler,
+		UpdateSneakersHandler
 	],
-	controllers: [SneakersController]
+	controllers: [SneakerModelsController, SneakersController]
 })
 export class SneakersModule {}

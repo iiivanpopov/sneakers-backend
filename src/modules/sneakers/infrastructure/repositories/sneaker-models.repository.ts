@@ -47,6 +47,10 @@ export class SneakerModelsRepository {
 		return this.prisma.sneakerModel.findFirst({ where: { slug } })
 	}
 
+	async sneakerModelExistsById(id: string) {
+		return this.prisma.sneakerModel.findFirst({ where: { id } })
+	}
+
 	async deleteSneakerModel(slug: string) {
 		return this.prisma.sneakerModel.delete({ where: { slug } })
 	}

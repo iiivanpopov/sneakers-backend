@@ -3,8 +3,8 @@
 ## WIP
 
 ```text
-GET    /sneakers/:slug/stock                 + // get sizes, quantity
-POST   /sneakers/:slug/stock       MANAGER   + // create new sneaker (size + quantity)
+GET    /sneakers/popular                     +
+GET    /sneakers/brands                      +
 ```
 
 ## AUTH
@@ -40,7 +40,7 @@ WIP
 ```text
 GET    /sneakers?offset=&limit=              *
 GET    /sneakers/search?q=&offset=&limit=    *
-GET    /sneakers/popular          
+GET    /sneakers/popular                     +
 GET    /sneakers/related/:slug
 GET    /sneakers/recommendations
 GET    /sneakers/brands                      +
@@ -49,15 +49,13 @@ POST   /sneakers                    MANAGER  *
 GET    /sneakers/:slug                       *
 PATCH  /sneakers/:slug              MANAGER  *
 DELETE /sneakers/:slug              MANAGER  *
+
 POST   /sneakers/:slug/images       MANAGER  
 DELETE /sneakers/:slug/images/:img  MANAGER  
 
-GET    /sneakers/:slug/stock                 + // all sizes
-POST   /sneakers/:slug/stock       MANAGER   + // size + qty
-
-GET    /stock/:id                            +
-PATCH  /stock/:id                  MANAGER   + //  qty, size, priceOverride
-DELETE /stock/:id                  MANAGER   +
+GET    /sneakers/:slug/stock                 * // quantities, sizes
+POST   /sneakers/:slug/stock        MANAGER  * // quantities, sizes
+PATCH  /sneakers/:slug/stock        MANAGER  + // quantities, sizes
 ```
 
 ## PAYMENTS

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 
 import { CreateSneakerPayload } from '../../domain/interfaces/create-sneaker-payload'
+import { UpdateSneakersPayload } from '../../domain/interfaces/update-sneakers-payload'
 
 import { PrismaService } from '@/prisma/prisma.service'
 
@@ -34,5 +35,33 @@ export class SneakersRepository {
 		return this.prisma.sneaker.findFirst({
 			where: { sneakerModel: { slug }, size }
 		})
+	}
+
+	async updateSneakers(modelId: string, payload: UpdateSneakersPayload) {
+		const promises = []
+
+		for (const sneaker of payload.sneakers) {
+			const size = sneaker.size
+			const quantity = sneaker.quantity
+
+			promises.push(
+				this.prisma.sneaker.upsert({
+					where: {
+						sneakerModelId_size: {
+							sneakerModelId: modelId,
+							size
+						}
+					},
+					update: { quantity },
+					create: {
+						sneakerModelId: modelId,
+						size,
+						quantity
+					}
+				})
+			)
+		}
+
+		return Promise.all(promises)
 	}
 }
