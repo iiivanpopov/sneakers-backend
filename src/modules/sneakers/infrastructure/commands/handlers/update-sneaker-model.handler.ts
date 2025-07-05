@@ -12,13 +12,8 @@ export class UpdateSneakerModelHandler
 {
 	constructor(private readonly sneakersRepository: SneakerModelsRepository) {}
 	async execute(command: UpdateSneakerModelCommand): Promise<SneakerModel> {
-		const exists = await this.sneakersRepository.sneakerModelExistsBySlug(
-			command.slug
-		)
+		const exists = await this.sneakersRepository.existsBySlug(command.slug)
 		if (!exists) throw new SneakerModelNotFound()
-		return this.sneakersRepository.updateSneakerModel(
-			command.slug,
-			command.sneakerModel
-		)
+		return this.sneakersRepository.update(command.slug, command.sneakerModel)
 	}
 }

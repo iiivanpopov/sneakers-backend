@@ -3,8 +3,7 @@
 ## WIP
 
 ```text
-GET    /sneakers/popular                     +
-GET    /sneakers/brands                      +
+
 ```
 
 ## AUTH
@@ -35,15 +34,15 @@ DELETE /user/:id                  MANAGER
 
 ## SNEAKERS
 
-WIP
+COMPLETED (BASE)
 
 ```text
 GET    /sneakers?offset=&limit=              *
 GET    /sneakers/search?q=&offset=&limit=    *
-GET    /sneakers/popular                     +
+GET    /sneakers/popular                     *
 GET    /sneakers/related/:slug
 GET    /sneakers/recommendations
-GET    /sneakers/brands                      +
+GET    /sneakers/brands                      *
 POST   /sneakers                    MANAGER  *
 
 GET    /sneakers/:slug                       *
@@ -55,23 +54,15 @@ DELETE /sneakers/:slug/images/:img  MANAGER
 
 GET    /sneakers/:slug/stock                 * // quantities, sizes
 POST   /sneakers/:slug/stock        MANAGER  * // quantities, sizes
-PATCH  /sneakers/:slug/stock        MANAGER  + // quantities, sizes
+PATCH  /sneakers/:slug/stock        MANAGER  * // quantities, sizes
 ```
 
-## PAYMENTS
+## FAVORITES
 
 ```text
-POST   /payments/create-session
-POST   /payments/webhook
-GET    /payments/status/:id
-```
-
-## NOTIFICATIONS
-
-```text
-GET    /notifications
-PATCH  /notifications/:id/read
-DELETE /notifications/:id
+GET    /favorites
+POST   /favorites/:sneakerId
+DELETE /favorites/:sneakerId
 ```
 
 ## CART
@@ -82,6 +73,31 @@ POST   /cart
 PATCH  /cart/:itemId
 DELETE /cart/:itemId
 DELETE /cart
+```
+
+## REVIEWS
+
+```text
+GET    /sneakers/:id/reviews
+POST   /sneakers/:id/reviews
+PATCH  /reviews/:id
+DELETE /reviews/:id 
+```
+
+## NOTIFICATIONS
+
+```text
+GET    /notifications
+PATCH  /notifications/:id/read
+DELETE /notifications/:id
+```
+
+## PAYMENTS
+
+```text
+POST   /payments/create-session
+POST   /payments/webhook
+GET    /payments/status/:id
 ```
 
 ## ORDERS
@@ -98,23 +114,6 @@ PATCH  /orders/:id/status         MANAGER
 ```text
 GET    /delivery/options
 POST   /delivery/estimate
-```
-
-## REVIEWS
-
-```text
-GET    /sneakers/:id/reviews
-POST   /sneakers/:id/reviews
-PATCH  /reviews/:id
-DELETE /reviews/:id 
-```
-
-## FAVORITES
-
-```text
-GET    /favorites
-POST   /favorites/:sneakerId
-DELETE /favorites/:sneakerId
 ```
 
 ## ANALYTICS

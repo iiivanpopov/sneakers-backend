@@ -1,4 +1,4 @@
-export class SearchSneakersQuery {
+export class SearchSneakerModelsQuery {
 	constructor(
 		public readonly offset: number,
 		public readonly limit: number,

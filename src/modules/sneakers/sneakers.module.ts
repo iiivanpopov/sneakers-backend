@@ -15,6 +15,8 @@ import {
 	GetSneakerModelsHandler,
 	SearchSneakerModelsHandler
 } from './infrastructure/queries'
+import { GetPopularModelsHandler } from './infrastructure/queries/handlers/get-popular-models.handler'
+import { GetSneakerBrandsHandler } from './infrastructure/queries/handlers/get-sneaker-brands.handler'
 import { GetSneakersHandler } from './infrastructure/queries/handlers/get-sneakers.handler'
 import { SneakerModelsRepository } from './infrastructure/repositories/sneaker-models.repository'
 import { SneakersRepository } from './infrastructure/repositories/sneakers.repository'
@@ -38,6 +40,8 @@ import { PrismaModule } from '@/prisma/prisma.module'
 		GetSneakerModelsHandler,
 		GetSneakersHandler,
 		GetSneakerModelHandler,
+		GetPopularModelsHandler,
+		GetSneakerBrandsHandler,
 
 		UpdateSneakerModelHandler,
 		DeleteSneakerModelHandler,

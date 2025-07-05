@@ -16,13 +16,11 @@ export class UpdateSneakersHandler
 		private readonly sneakersRepository: SneakersRepository
 	) {}
 	async execute(command: UpdateSneakersCommand): Promise<Sneaker[]> {
-		const exists = await this.sneakerModelsRepository.sneakerModelExistsBySlug(
-			command.slug
-		)
+		const exists = await this.sneakerModelsRepository.existsBySlug(command.slug)
 		if (!exists) throw new SneakerModelNotFound()
 
 		const model = await this.sneakerModelsRepository.findBySlug(command.slug)
 
-		return this.sneakersRepository.updateSneakers(model.id, command.dto)
+		return this.sneakersRepository.updateMany(model.id, command.dto)
 	}
 }

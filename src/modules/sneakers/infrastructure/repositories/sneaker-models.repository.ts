@@ -10,9 +10,8 @@ import { PrismaService } from '@/prisma/prisma.service'
 export class SneakerModelsRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findMany(args: Partial<Prisma.SneakerModelFindManyArgs>) {
-		return this.prisma.sneakerModel.findMany({
-			...args,
+	async findOne(args: Prisma.SneakerModelFindFirstArgs) {
+		return this.prisma.sneakerModel.findFirst({
 			select: {
 				id: true,
 				name: true,
@@ -20,7 +19,22 @@ export class SneakerModelsRepository {
 				price: true,
 				slug: true,
 				imageUrl: true
-			}
+			},
+			...args
+		})
+	}
+
+	async findMany(args: Partial<Prisma.SneakerModelFindManyArgs> = {}) {
+		return this.prisma.sneakerModel.findMany({
+			select: {
+				id: true,
+				name: true,
+				brand: true,
+				price: true,
+				slug: true,
+				imageUrl: true
+			},
+			...args
 		})
 	}
 
@@ -39,29 +53,55 @@ export class SneakerModelsRepository {
 		})
 	}
 
-	async createSneakerModel(data: CreateSneakerModelPayload) {
+	async findManyBySlugs(slugs: string[]) {
+		if (!slugs.length) return []
+		return this.prisma.sneakerModel.findMany({
+			where: { slug: { in: slugs } },
+			select: {
+				id: true,
+				name: true,
+				brand: true,
+				price: true,
+				slug: true,
+				imageUrl: true
+			}
+		})
+	}
+
+	async getBrands(): Promise<{ brand: string }[]> {
+		return this.prisma.$queryRaw`
+			SELECT DISTINCT brand FROM sneaker_model
+		`
+	}
+
+	async create(data: CreateSneakerModelPayload) {
 		return this.prisma.sneakerModel.create({ data })
 	}
 
-	async sneakerModelExistsBySlug(slug: string) {
-		return this.prisma.sneakerModel.findFirst({ where: { slug } })
+	async update(slug: string, data: Partial<UpdateSneakerModelPayload>) {
+		return this.prisma.sneakerModel.update({
+			where: { slug },
+			data
+		})
 	}
 
-	async sneakerModelExistsById(id: string) {
-		return this.prisma.sneakerModel.findFirst({ where: { id } })
-	}
-
-	async deleteSneakerModel(slug: string) {
+	async delete(slug: string) {
 		return this.prisma.sneakerModel.delete({ where: { slug } })
 	}
 
-	async updateSneakerModel(
-		slug: string,
-		sneakerModel: Partial<UpdateSneakerModelPayload>
-	) {
-		return this.prisma.sneakerModel.update({
+	async existsBySlug(slug: string): Promise<boolean> {
+		const res = await this.prisma.sneakerModel.findUnique({
 			where: { slug },
-			data: sneakerModel
+			select: { id: true }
 		})
+		return !!res
+	}
+
+	async existsById(id: string): Promise<boolean> {
+		const res = await this.prisma.sneakerModel.findUnique({
+			where: { id },
+			select: { id: true }
+		})
+		return !!res
 	}
 }

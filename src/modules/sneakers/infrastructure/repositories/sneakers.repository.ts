@@ -9,7 +9,7 @@ import { PrismaService } from '@/prisma/prisma.service'
 export class SneakersRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async createSneaker(slug: string, data: CreateSneakerPayload) {
+	async create(slug: string, data: CreateSneakerPayload) {
 		return this.prisma.sneaker.create({
 			data: {
 				size: data.size,
@@ -21,30 +21,29 @@ export class SneakersRepository {
 		})
 	}
 
-	async findSneakers(slug: string) {
+	async findBySlug(slug: string) {
 		return this.prisma.sneaker.findMany({
-			where: {
-				sneakerModel: {
-					slug
-				}
+			where: { sneakerModel: { slug } },
+			select: {
+				id: true,
+				size: true,
+				quantity: true,
+				sneakerModelId: true
 			}
 		})
 	}
 
-	async sneakerExists(slug: string, size: number) {
-		return this.prisma.sneaker.findFirst({
-			where: { sneakerModel: { slug }, size }
+	async exists(slug: string, size: number): Promise<boolean> {
+		const result = await this.prisma.sneaker.findFirst({
+			where: { sneakerModel: { slug }, size },
+			select: { id: true }
 		})
+		return !!result
 	}
 
-	async updateSneakers(modelId: string, payload: UpdateSneakersPayload) {
-		const promises = []
-
-		for (const sneaker of payload.sneakers) {
-			const size = sneaker.size
-			const quantity = sneaker.quantity
-
-			promises.push(
+	async updateMany(modelId: string, payload: UpdateSneakersPayload) {
+		return Promise.all(
+			payload.sneakers.map(({ size, quantity }) =>
 				this.prisma.sneaker.upsert({
 					where: {
 						sneakerModelId_size: {
@@ -60,8 +59,6 @@ export class SneakersRepository {
 					}
 				})
 			)
-		}
-
-		return Promise.all(promises)
+		)
 	}
 }

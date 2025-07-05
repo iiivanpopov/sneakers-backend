@@ -16,11 +16,9 @@ export class GetSneakerModelHandler
 	) {}
 
 	async execute(query: GetSneakerModelQuery) {
-		const exists = await this.sneakersRepository.sneakerModelExistsBySlug(
-			query.slug
-		)
+		const exists = await this.sneakersRepository.existsBySlug(query.slug)
 		if (!exists) throw new SneakerModelNotFound()
-		await this.redisService.increment(`popularity:${query.slug}`)
+		await this.redisService.incrementPopularity(query.slug)
 		return this.sneakersRepository.findBySlug(query.slug)
 	}
 }

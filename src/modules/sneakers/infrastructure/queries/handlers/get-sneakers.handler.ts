@@ -14,11 +14,9 @@ export class GetSneakersHandler implements IQueryHandler<GetSneakersQuery> {
 	) {}
 
 	async execute(query: GetSneakersQuery) {
-		const model = await this.sneakersModelRepository.sneakerModelExistsBySlug(
-			query.slug
-		)
+		const model = await this.sneakersModelRepository.existsBySlug(query.slug)
 		if (!model) throw new SneakerModelNotFound()
 
-		return this.sneakersRepository.findSneakers(query.slug)
+		return this.sneakersRepository.findBySlug(query.slug)
 	}
 }

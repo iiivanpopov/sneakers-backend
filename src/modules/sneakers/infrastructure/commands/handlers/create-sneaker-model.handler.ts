@@ -15,10 +15,10 @@ export class CreateSneakerModelHandler
 	) {}
 
 	async execute(command: CreateSneakerModelCommand): Promise<SneakerModel> {
-		const exists = await this.sneakersModelRepository.sneakerModelExistsBySlug(
+		const exists = await this.sneakersModelRepository.existsBySlug(
 			command.sneakerModel.slug
 		)
 		if (exists) throw new SneakerModelAlreadyExists()
-		return this.sneakersModelRepository.createSneakerModel(command.sneakerModel)
+		return this.sneakersModelRepository.create(command.sneakerModel)
 	}
 }

@@ -17,17 +17,15 @@ export class CreateSneakerHandler
 		private readonly sneakersRepository: SneakersRepository
 	) {}
 	async execute(command: CreateSneakerCommand): Promise<Sneaker> {
-		const exists = await this.sneakerModelsRepository.sneakerModelExistsBySlug(
-			command.slug
-		)
+		const exists = await this.sneakerModelsRepository.existsBySlug(command.slug)
 		if (!exists) throw new SneakerModelNotFound()
 
-		const sneaker = await this.sneakersRepository.sneakerExists(
+		const sneaker = await this.sneakersRepository.exists(
 			command.slug,
 			command.sneaker.size
 		)
 		if (sneaker) throw new SneakerAlreadyExists()
 
-		return this.sneakersRepository.createSneaker(command.slug, command.sneaker)
+		return this.sneakersRepository.create(command.slug, command.sneaker)
 	}
 }

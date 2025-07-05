@@ -3,13 +3,17 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs'
 
 import { CreateSneakerModelPayload } from '../../domain/interfaces/create-sneaker-model-payload'
 import {
+	CreateSneakerModelCommand,
 	DeleteSneakerModelCommand,
 	UpdateSneakerModelCommand
 } from '../commands'
-import { CreateSneakerModelCommand } from '../commands/create-sneaker-model.command'
-import { GetSneakerModelQuery } from '../queries/get-sneaker-model.query'
-import { GetSneakerModelsQuery } from '../queries/get-sneaker-models.query'
-import { SearchSneakersQuery } from '../queries/search-sneakers.query'
+import {
+	GetSneakerModelsQuery,
+	GetSneakerModelQuery,
+	SearchSneakerModelsQuery
+} from '../queries'
+import { GetPopularModelsQuery } from '../queries/get-popular-models.query'
+import { GetSneakerBrandsQuery } from '../queries/get-sneaker-brands.query'
 
 @Injectable()
 export class SneakersModelService {
@@ -18,16 +22,26 @@ export class SneakersModelService {
 		private readonly queryBus: QueryBus
 	) {}
 
-	async getSneakers(offset: number, limit: number) {
+	async getSneakerModels(offset: number, limit: number) {
 		return this.queryBus.execute(new GetSneakerModelsQuery(offset, limit))
 	}
 
-	async getSneakerBySlug(slug: string) {
+	async getSneakerBrands() {
+		return this.queryBus.execute(new GetSneakerBrandsQuery())
+	}
+
+	async getPopularModels() {
+		return this.queryBus.execute(new GetPopularModelsQuery())
+	}
+
+	async getSneakerModel(slug: string) {
 		return this.queryBus.execute(new GetSneakerModelQuery(slug))
 	}
 
 	async searchSneakers(offset: number, limit: number, search: string) {
-		return this.queryBus.execute(new SearchSneakersQuery(offset, limit, search))
+		return this.queryBus.execute(
+			new SearchSneakerModelsQuery(offset, limit, search)
+		)
 	}
 
 	async createSneakerModel(sneakerModel: CreateSneakerModelPayload) {
