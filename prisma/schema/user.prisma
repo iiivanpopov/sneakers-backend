@@ -11,6 +11,7 @@ model User {
   token           Token?
   favorites       SneakerModel[] @relation("UserFavorites")
   cart            Cart?
+  reviews         Review[]
 
   @@map("user")
 }

@@ -5,9 +5,11 @@ import { AddCartItemDTO } from '../dto/add-cart-item.dto'
 import { UpdateCartItemDTO } from '../dto/update-cart-item.dto'
 import { CartRepository } from '../repositories/cart.repository'
 
-import { CartItemExists } from '@/exceptions/cart/cart-item-exists.exception'
-import { CartItemNotFound } from '@/exceptions/cart/cart-item-not-found.exception'
-import { CartNotFound } from '@/exceptions/cart/cart-not-found.exception'
+import {
+	CartItemExists,
+	CartItemNotFound,
+	CartNotFound
+} from '@/exceptions/index'
 
 @Injectable()
 export class CartService {

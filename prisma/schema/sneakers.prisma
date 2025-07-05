@@ -12,6 +12,7 @@ model SneakerModel {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  Review    Review[]
 
   @@map("sneaker_model")
 }

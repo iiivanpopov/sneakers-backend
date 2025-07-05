@@ -5,6 +5,7 @@ import configuration from './config'
 import { AuthModule } from './modules/auth/auth.module'
 import { CartModule } from './modules/cart/cart.module'
 import { FavoritesModule } from './modules/favorites/favorites.module'
+import { ReviewsModule } from './modules/reviews/reviews.module'
 import { SneakersModule } from './modules/sneakers/sneakers.module'
 import { UserModule } from './modules/user/user.module'
 
@@ -18,7 +19,8 @@ import { UserModule } from './modules/user/user.module'
 		UserModule,
 		SneakersModule,
 		FavoritesModule,
-		CartModule
+		CartModule,
+		ReviewsModule
 	]
 })
 export class AppModule {}

@@ -1,6 +1,6 @@
 export * from './bad-otp.exception'
+export * from './bad-password.exception'
 export * from './missing-refresh-token.exception'
 export * from './multiple-users.exception'
 export * from './otp-not-found.exception'
 export * from './user-exists.exception'
-export * from './bad-password.exception'

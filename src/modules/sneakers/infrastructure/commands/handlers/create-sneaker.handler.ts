@@ -5,8 +5,7 @@ import { SneakerModelsRepository } from '../../repositories/sneaker-models.repos
 import { SneakersRepository } from '../../repositories/sneakers.repository'
 import { CreateSneakerCommand } from '../create-sneaker.command'
 
-import { SneakerAlreadyExists } from '@/exceptions/sneakers/sneaker-already-exists.exception'
-import { SneakerModelNotFound } from '@/exceptions/sneakers/sneaker-model-not-found.exception'
+import { SneakerAlreadyExists, SneakerModelNotFound } from '@/exceptions/index'
 
 @CommandHandler(CreateSneakerCommand)
 export class CreateSneakerHandler

@@ -84,7 +84,7 @@ DELETE /cart
 
 ## REVIEWS
 
-WIP
+COMPLETED
 
 ```text
 GET    /sneakers/:id/reviews
@@ -95,18 +95,12 @@ DELETE /reviews/:id
 
 ## NOTIFICATIONS
 
+WIP
+
 ```text
 GET    /notifications
 PATCH  /notifications/:id/read
 DELETE /notifications/:id
-```
-
-## PAYMENTS
-
-```text
-POST   /payments/create-session
-POST   /payments/webhook
-GET    /payments/status/:id
 ```
 
 ## ORDERS
@@ -123,6 +117,13 @@ PATCH  /orders/:id/status         MANAGER
 ```text
 GET    /delivery/options
 POST   /delivery/estimate
+```
+
+## PAYMENTS
+
+```text
+POST   /payments/create/:orderId
+POST   /payments/webhook
 ```
 
 ## ANALYTICS

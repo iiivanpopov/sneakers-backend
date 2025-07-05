@@ -21,7 +21,7 @@ export class SneakerModelsRepository {
 
 	constructor(private readonly prisma: PrismaService) {}
 
-	private buildSelect(userId?: string) {
+	private buildSelect(userId?: string, args?: Record<string, any>) {
 		return {
 			...this.baseSelect,
 			...(userId && {
