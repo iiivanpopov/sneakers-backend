@@ -1,6 +1,6 @@
-import { NotFoundException } from '@nestjs/common'
+import { BadRequestException } from '@nestjs/common'
 
-export class CartItemExists extends NotFoundException {
+export class CartItemExists extends BadRequestException {
 	constructor(message = 'Cart item already exists') {
 		super(message)
 	}

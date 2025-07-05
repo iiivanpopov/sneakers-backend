@@ -23,7 +23,7 @@ export class FavoritesController {
 
 	@Post(':slug')
 	async addFavorite(@CurrentUser() user: User, @Param('slug') slug: string) {
-		await this.favoritesService.create(user.id, slug)
+		await this.favoritesService.add(user.id, slug)
 
 		return {
 			message: 'Added favorite successfully',

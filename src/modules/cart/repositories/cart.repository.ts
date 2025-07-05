@@ -42,7 +42,18 @@ export class CartRepository {
 		})
 
 		return this.prisma.cartItem.create({
-			data: { cartId: cart.id, ...item }
+			data: { cartId: cart.id, ...item },
+			include: {
+				sneaker: {
+					select: {
+						sneakerModel: {
+							select: {
+								slug: true
+							}
+						}
+					}
+				}
+			}
 		})
 	}
 

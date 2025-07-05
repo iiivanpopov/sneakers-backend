@@ -16,7 +16,18 @@ export class FavoritesRepository {
 		})
 	}
 
-	async create(userId: string, slug: string) {
+	async exists(userId: string, slug: string) {
+		return this.prisma.sneakerModel.findFirst({
+			where: {
+				slug,
+				favouredBy: {
+					some: { id: userId }
+				}
+			}
+		})
+	}
+
+	async add(userId: string, slug: string) {
 		return this.prisma.user.update({
 			where: {
 				id: userId

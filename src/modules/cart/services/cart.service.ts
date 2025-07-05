@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { RedisService } from 'src/modules/redis/redis.service'
 
 import { AddCartItemDTO } from '../dto/add-cart-item.dto'
 import { UpdateCartItemDTO } from '../dto/update-cart-item.dto'
@@ -10,7 +11,10 @@ import { CartNotFound } from '@/exceptions/cart/cart-not-found.exception'
 
 @Injectable()
 export class CartService {
-	constructor(private readonly cartRepository: CartRepository) {}
+	constructor(
+		private readonly cartRepository: CartRepository,
+		private readonly redisService: RedisService
+	) {}
 
 	async getCart(userId: string) {
 		const cart = await this.cartRepository.getCart(userId)
@@ -25,7 +29,9 @@ export class CartService {
 		const exists = await this.cartRepository.existsBySneakerId(dto.sneakerId)
 		if (exists) throw new CartItemExists()
 
-		await this.cartRepository.addByUserId(userId, dto)
+		const item = await this.cartRepository.addByUserId(userId, dto)
+
+		await this.redisService.incrementPopularity(item.sneaker.sneakerModel.slug)
 	}
 
 	async clearCart(userId: string) {
