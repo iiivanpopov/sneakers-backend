@@ -15,6 +15,8 @@ import {
 import { GetPopularModelsQuery } from '../queries/get-popular-models.query'
 import { GetSneakerBrandsQuery } from '../queries/get-sneaker-brands.query'
 
+import { User } from '@/auth/domain/entities/User'
+
 @Injectable()
 export class SneakersModelService {
 	constructor(
@@ -22,8 +24,10 @@ export class SneakersModelService {
 		private readonly queryBus: QueryBus
 	) {}
 
-	async getSneakerModels(offset: number, limit: number) {
-		return this.queryBus.execute(new GetSneakerModelsQuery(offset, limit))
+	async getSneakerModels(offset: number, limit: number, optionalUser?: User) {
+		return this.queryBus.execute(
+			new GetSneakerModelsQuery(offset, limit, optionalUser.id)
+		)
 	}
 
 	async getSneakerBrands() {
@@ -34,13 +38,20 @@ export class SneakersModelService {
 		return this.queryBus.execute(new GetPopularModelsQuery())
 	}
 
-	async getSneakerModel(slug: string) {
-		return this.queryBus.execute(new GetSneakerModelQuery(slug))
+	async getSneakerModel(slug: string, optionalUser?: User) {
+		return this.queryBus.execute(
+			new GetSneakerModelQuery(slug, optionalUser.id)
+		)
 	}
 
-	async searchSneakers(offset: number, limit: number, search: string) {
+	async searchSneakers(
+		offset: number,
+		limit: number,
+		search: string,
+		optionalUser?: User
+	) {
 		return this.queryBus.execute(
-			new SearchSneakerModelsQuery(offset, limit, search)
+			new SearchSneakerModelsQuery(offset, limit, search, optionalUser.id)
 		)
 	}
 

@@ -14,13 +14,16 @@ export class SearchSneakerModelsHandler
 	) {}
 
 	async execute(query: SearchSneakerModelsQuery) {
-		const { offset, limit, search } = query
+		const { offset, limit, search, userId } = query
 
-		const direct = await this.sneakersRepository.findOne({
-			where: {
-				OR: [{ slug: search }, { name: search }]
-			}
-		})
+		const direct = await this.sneakersRepository.findOne(
+			{
+				where: {
+					OR: [{ slug: search }, { name: search }]
+				}
+			},
+			userId
+		)
 
 		if (direct) {
 			await this.redisService.incrementPopularity(direct.slug)

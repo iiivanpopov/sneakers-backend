@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 
 import { AuthModule } from './modules/auth/auth.module'
+import { FavoritesModule } from './modules/favorites/favorites.module'
 import { SneakersModule } from './modules/sneakers/sneakers.module'
 import { UserModule } from './modules/user/user.module'
 import configuration from './shared/config'
@@ -14,7 +15,8 @@ import configuration from './shared/config'
 		}),
 		AuthModule,
 		UserModule,
-		SneakersModule
+		SneakersModule,
+		FavoritesModule
 	]
 })
 export class AppModule {}

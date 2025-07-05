@@ -1,13 +1,14 @@
 model SneakerModel {
-  id        String    @id @default(cuid())
-  name      String
-  brand     String
-  colorway  String?   @default("")
-  releaseAt String?   @default("") @map("release_at")
-  imageUrl  String?   @default("") @map("image_url")
-  price     Decimal
-  slug      String    @unique
-  items     Sneaker[]
+  id         String    @id @default(cuid())
+  name       String
+  brand      String
+  colorway   String?   @default("")
+  releaseAt  String?   @default("") @map("release_at")
+  imageUrl   String?   @default("") @map("image_url")
+  price      Decimal
+  slug       String    @unique
+  items      Sneaker[]
+  favouredBy User[]    @relation("UserFavorites")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

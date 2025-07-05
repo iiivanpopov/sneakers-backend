@@ -3,7 +3,11 @@
 ## WIP
 
 ```text
-
+GET    /cart
+POST   /cart
+PATCH  /cart/:slug
+DELETE /cart/:slug
+DELETE /cart
 ```
 
 ## AUTH
@@ -57,12 +61,14 @@ POST   /sneakers/:slug/stock        MANAGER  * // quantities, sizes
 PATCH  /sneakers/:slug/stock        MANAGER  * // quantities, sizes
 ```
 
+COMPLETED
+
 ## FAVORITES
 
 ```text
 GET    /favorites
-POST   /favorites/:sneakerId
-DELETE /favorites/:sneakerId
+POST   /favorites/:slug
+DELETE /favorites/:slug
 ```
 
 ## CART
@@ -70,8 +76,8 @@ DELETE /favorites/:sneakerId
 ```text
 GET    /cart
 POST   /cart
-PATCH  /cart/:itemId
-DELETE /cart/:itemId
+PATCH  /cart/:slug
+DELETE /cart/:slug
 DELETE /cart
 ```
 

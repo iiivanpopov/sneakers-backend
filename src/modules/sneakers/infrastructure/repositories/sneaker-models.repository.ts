@@ -8,38 +8,66 @@ import { PrismaService } from '@/prisma/prisma.service'
 
 @Injectable()
 export class SneakerModelsRepository {
+	private readonly baseSelect = {
+		id: true,
+		name: true,
+		brand: true,
+		colorway: true,
+		releaseAt: true,
+		imageUrl: true,
+		price: true,
+		slug: true
+	}
+
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findOne(args: Prisma.SneakerModelFindFirstArgs) {
-		return this.prisma.sneakerModel.findFirst({
-			select: {
-				id: true,
-				name: true,
-				brand: true,
-				price: true,
-				slug: true,
-				imageUrl: true
-			},
-			...args
-		})
+	private buildSelect(userId?: string) {
+		return {
+			...this.baseSelect,
+			...(userId && {
+				_count: {
+					select: {
+						favouredBy: {
+							where: { id: userId }
+						}
+					}
+				}
+			})
+		}
 	}
 
-	async findMany(args: Partial<Prisma.SneakerModelFindManyArgs> = {}) {
-		return this.prisma.sneakerModel.findMany({
-			select: {
-				id: true,
-				name: true,
-				brand: true,
-				price: true,
-				slug: true,
-				imageUrl: true
-			},
-			...args
-		})
+	private mapWithIsFavored<T extends { _count?: { favouredBy: number } }>(
+		sneaker: T,
+		rest: Partial<T> = {}
+	): T & { isFavored: boolean } {
+		const isFavored = sneaker._count?.favouredBy > 0
+		const { _count, ...data } = sneaker
+		return { ...data, ...rest, isFavored } as T & { isFavored: boolean }
 	}
 
-	async findBySlug(slug: string) {
-		return this.prisma.sneakerModel.findUnique({
+	async findOne(args: Prisma.SneakerModelFindFirstArgs, userId?: string) {
+		const sneaker = await this.prisma.sneakerModel.findFirst({
+			select: this.buildSelect(userId),
+			...args
+		})
+
+		return sneaker ? this.mapWithIsFavored(sneaker) : null
+	}
+
+	async findMany(
+		args: Partial<Prisma.SneakerModelFindManyArgs> = {},
+		userId?: string
+	) {
+		const sneakers = await this.prisma.sneakerModel.findMany({
+			select: this.buildSelect(userId),
+			...args
+		})
+
+		return sneakers.map(s => this.mapWithIsFavored(s))
+	}
+
+	async findBySlug(slug: string, userId?: string) {
+		const sneaker = await this.prisma.sneakerModel.findUnique({
 			where: { slug },
 			include: {
 				items: {
@@ -48,30 +76,40 @@ export class SneakerModelsRepository {
 						size: true,
 						quantity: true
 					}
-				}
+				},
+				...(userId && {
+					_count: {
+						select: {
+							favouredBy: {
+								where: { id: userId }
+							}
+						}
+					}
+				})
 			}
 		})
+
+		return sneaker
+			? this.mapWithIsFavored(sneaker, { items: sneaker.items })
+			: null
 	}
 
-	async findManyBySlugs(slugs: string[]) {
+	async findManyBySlugs(slugs: string[], userId?: string) {
 		if (!slugs.length) return []
-		return this.prisma.sneakerModel.findMany({
+
+		const sneakers = await this.prisma.sneakerModel.findMany({
 			where: { slug: { in: slugs } },
-			select: {
-				id: true,
-				name: true,
-				brand: true,
-				price: true,
-				slug: true,
-				imageUrl: true
-			}
+			select: this.buildSelect(userId)
 		})
+
+		return sneakers.map(s => this.mapWithIsFavored(s))
 	}
 
 	async getBrands(): Promise<{ brand: string }[]> {
-		return this.prisma.$queryRaw`
-			SELECT DISTINCT brand FROM sneaker_model
-		`
+		return this.prisma.sneakerModel.findMany({
+			select: { brand: true },
+			distinct: ['brand']
+		})
 	}
 
 	async create(data: CreateSneakerModelPayload) {
@@ -86,7 +124,9 @@ export class SneakerModelsRepository {
 	}
 
 	async delete(slug: string) {
-		return this.prisma.sneakerModel.delete({ where: { slug } })
+		return this.prisma.sneakerModel.delete({
+			where: { slug }
+		})
 	}
 
 	async existsBySlug(slug: string): Promise<boolean> {

@@ -46,7 +46,13 @@ export class AuthService {
 		const tokens = await this.tokenService.generateTokens(created)
 
 		return {
-			user: new User(created.email, created.name, created.phone, created.role),
+			user: new User(
+				created.email,
+				created.name,
+				created.phone,
+				created.role,
+				created.id
+			),
 			tokens
 		}
 	}
@@ -66,7 +72,7 @@ export class AuthService {
 		const tokens = await this.tokenService.generateTokens(user)
 
 		return {
-			user: new User(user.email, user.name, user.phone, user.role),
+			user: new User(user.email, user.name, user.phone, user.role, user.id),
 			tokens
 		}
 	}
@@ -92,7 +98,7 @@ export class AuthService {
 		const tokens = await this.tokenService.generateTokens(user)
 
 		return {
-			user: new User(user.email, user.name, user.phone, user.role),
+			user: new User(user.email, user.name, user.phone, user.role, user.id),
 			tokens
 		}
 	}

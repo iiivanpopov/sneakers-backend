@@ -10,7 +10,10 @@ export class GetSneakerModelsHandler
 	constructor(private readonly sneakersRepository: SneakerModelsRepository) {}
 
 	async execute(query: GetSneakerModelsQuery) {
-		const { offset, limit } = query
-		return this.sneakersRepository.findMany({ skip: offset, take: limit })
+		const { offset, limit, userId } = query
+		return this.sneakersRepository.findMany(
+			{ skip: offset, take: limit },
+			userId
+		)
 	}
 }
