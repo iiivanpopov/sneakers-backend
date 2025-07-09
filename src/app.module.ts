@@ -1,7 +1,21 @@
+import { RedisModule } from '@nestjs-modules/ioredis'
 import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import { UsersModule } from './modules/users'
+import { OtpsModule } from './modules/otps'
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+    RedisModule.forRoot({
+      type: 'single',
+      url: process.env.REDIS_URL
+    }),
+    OtpsModule,
+    UsersModule
+  ],
   controllers: [],
   providers: []
 })

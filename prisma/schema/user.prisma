@@ -1,0 +1,18 @@
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  firstName    String?       @map("first_name")
+  middleName   String?       @map("middle_name")
+  lastName     String?       @map("last_name")
+  country      String?
+  city         String?
+  role         Role          @default(CUSTOMER)
+  refreshToken RefreshToken?
+
+  @@map("user")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}

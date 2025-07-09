@@ -1,0 +1,8 @@
+model RefreshToken {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+  token  String @unique
+
+  @@map("refresh_token")
+}
