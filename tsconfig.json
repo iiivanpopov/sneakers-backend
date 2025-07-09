@@ -22,5 +22,5 @@
       "@/prisma": ["../prisma/generated/prisma"]
     }
   },
-  "include": ["env.d.ts", "src"]
+  "include": ["env.d.ts", "index.d.ts", "src"]
 }

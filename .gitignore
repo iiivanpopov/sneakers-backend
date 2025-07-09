@@ -4,6 +4,7 @@
 /build
 /credentials
 **/generated
+**/.vscode
 
 # Logs
 logs

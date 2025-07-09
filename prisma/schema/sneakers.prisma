@@ -1,0 +1,42 @@
+model Sneaker {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  brandId     String      @map("brand_id")
+  brand       Brand       @relation(fields: [brandId], references: [id])
+  description String?
+  price       Int
+  images      String[]
+  stocks      Stock[]
+  popularity  Popularity?
+
+  @@map("sneaker")
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  name     String
+  sneakers Sneaker[]
+
+  @@map("brand")
+}
+
+model Stock {
+  id        String     @id @default(cuid())
+  sneakerId String     @map("sneaker_id")
+  sneaker   Sneaker    @relation(fields: [sneakerId], references: [id])
+  size      Float
+  quantity  Int
+  cartItems CartItem[]
+
+  @@map("stock")
+}
+
+model Popularity {
+  sneakerId String  @id @map("sneaker_id")
+  sneaker   Sneaker @relation(fields: [sneakerId], references: [id])
+  views     Int     @default(0)
+  purchases Int     @default(0)
+
+  @@map("popularity")
+}

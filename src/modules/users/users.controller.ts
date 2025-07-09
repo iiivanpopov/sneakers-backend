@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Patch,
   Post,
   Req,
@@ -21,14 +22,16 @@ import {
 import { SignInDto, UpdateProfileDto } from './dto'
 import {
   RefreshResponse,
+  SessionResponse,
   SignInResponse,
   UpdateProfileResponse
 } from './users.model'
-import { COOKIES, OtpsService } from '../otps'
+import { OtpsService } from '../otps'
 import { Request, Response } from 'express'
 import { TokenService } from '@/utils/services/auth/common/token/token.service'
 import { UseAuthGuard } from '@/utils/guards/auth-guard'
 import { mapToUserEntity } from './entities'
+import { COOKIES } from './constants'
 
 @Controller()
 export class UsersController extends BaseResolver {
@@ -166,6 +169,30 @@ export class UsersController extends BaseResolver {
     })
 
     return this.wrapSuccess({ accessToken })
+  }
+
+  @Get('/session')
+  @UseAuthGuard()
+  @ApiHeader({
+    name: 'authorization'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'get user session',
+    type: SessionResponse
+  })
+  @ApiOperation({ summary: 'Get user session' })
+  @ApiBearerAuth()
+  async getUserSession(@Req() req: Request): Promise<SessionResponse> {
+    const user = await this.usersService.findFirst({
+      where: { id: req.user?.userId }
+    })
+
+    if (!user) {
+      throw new BadRequestException(this.wrapFail('User does not exists'))
+    }
+
+    return this.wrapSuccess({ user: mapToUserEntity(user) })
   }
 
   @Patch('/profile')

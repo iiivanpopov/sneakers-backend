@@ -8,6 +8,7 @@ model User {
   city         String?
   role         Role          @default(CUSTOMER)
   refreshToken RefreshToken?
+  cartItems    CartItem[]
 
   @@map("user")
 }

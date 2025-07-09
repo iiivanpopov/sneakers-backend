@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { UsersModule } from './modules/users'
 import { OtpsModule } from './modules/otps'
+import { SneakersModule } from './modules/sneakers/sneakers.module'
+import { CartModule } from './modules/cart'
 
 @Module({
   imports: [
@@ -14,9 +16,9 @@ import { OtpsModule } from './modules/otps'
       url: process.env.REDIS_URL
     }),
     OtpsModule,
-    UsersModule
-  ],
-  controllers: [],
-  providers: []
+    UsersModule,
+    SneakersModule,
+    CartModule
+  ]
 })
 export class AppModule {}
