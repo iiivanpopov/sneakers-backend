@@ -1,4 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post
+} from '@nestjs/common'
 import { OtpsService } from './otps.service'
 import { BaseResolver } from '@/utils/services/base'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
@@ -50,5 +57,24 @@ export class OtpsController extends BaseResolver {
     await this.mailService.sendOtp(createOtpDto.email, code)
 
     return this.wrapSuccess({ retryAt })
+  }
+
+  @Get('/auth/otp/:email')
+  @ApiOperation({ summary: 'OTP status' })
+  @ApiResponse({
+    status: 200,
+    description: 'otp status',
+    type: OtpResponse
+  })
+  async getOtpStatus(@Param('email') email: string): Promise<OtpResponse> {
+    const existingOtp = await this.otpsService.findByEmail(email)
+
+    if (!existingOtp) {
+      throw new NotFoundException(this.wrapFail('Otp not found'))
+    }
+
+    return this.wrapSuccess({
+      retryAt: existingOtp.retryAt
+    })
   }
 }

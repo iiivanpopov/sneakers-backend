@@ -14,7 +14,8 @@ async function bootstrap() {
       key: fs.readFileSync(path.resolve(__dirname, '../credentials/key.key'))
     },
     cors: {
-      origin: '*'
+      origin: 'http://localhost:5173',
+      credentials: true
     }
   })
   app.use(cookieParser())
