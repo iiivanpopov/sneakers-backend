@@ -29,7 +29,7 @@ import {
 import { OtpsService } from '../otps'
 import { Request, Response } from 'express'
 import { TokenService } from '@/utils/services/auth/common/token/token.service'
-import { UseAuthGuard } from '@/utils/guards/auth-guard'
+import { UseAuthGuard } from '@/utils/guards/auth.guard'
 import { mapToUserEntity } from './entities'
 import { COOKIES } from './constants'
 
@@ -78,7 +78,8 @@ export class UsersController extends BaseResolver {
 
     await this.otpsService.deleteByEmail(signInDto.email)
     const { accessToken, refreshToken } = await this.authService.authenticate({
-      sub: user.id
+      sub: user.id,
+      role: user.role
     })
 
     await this.tokenService.upsert({
@@ -147,13 +148,21 @@ export class UsersController extends BaseResolver {
       throw new UnauthorizedException(this.wrapFail('Missing refresh token'))
 
     const tokenRecord = await this.tokenService.findUnique({
-      where: { token: cookieRefreshToken }
+      where: { token: cookieRefreshToken },
+      include: {
+        user: {
+          select: {
+            role: true
+          }
+        }
+      }
     })
     if (!tokenRecord)
       throw new UnauthorizedException(this.wrapFail('Refresh token revoked'))
 
     const { accessToken, refreshToken } = await this.authService.authenticate({
-      sub: tokenRecord.userId
+      sub: tokenRecord.userId,
+      role: tokenRecord.user.role
     })
 
     await this.tokenService.update({

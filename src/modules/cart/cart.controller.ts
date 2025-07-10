@@ -1,4 +1,4 @@
-import { UseAuthGuard } from '@/utils/guards/auth-guard'
+import { UseAuthGuard } from '@/utils/guards/auth.guard'
 import {
   Body,
   Controller,

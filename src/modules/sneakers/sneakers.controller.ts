@@ -1,11 +1,14 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   NotFoundException,
   Param,
+  Post,
   Query
 } from '@nestjs/common'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import {
   SneakersListResponse,
   SneakersSearchResponse,
@@ -22,12 +25,18 @@ import {
   mapToBrand,
   mapToSneakerDetails,
   mapToStockItem,
-  StockItem
+  StockItem,
+  CreateSneakerResponse,
+  AddStockResponse
 } from './sneakers.model'
 import { BaseResolver } from '@/utils/services/base'
 import { BrandsService } from './services/brands.service'
 import { StockService } from './services/stock.service'
 import { SneakersService } from './services/sneakers.service'
+import { CreateSneakerDto } from './dto/create-sneaker.dto'
+import { AddStockDto } from './dto/add-stock.dto'
+import { UseAuthGuard } from '@/utils/guards/auth.guard'
+import { AdminGuard } from '@/utils/guards/admin.guard'
 
 @ApiTags('Sneakers')
 @Controller('sneakers')
@@ -47,7 +56,7 @@ export class SneakersController extends BaseResolver {
     @Query('offset') offset?: string,
     @Query('limit') limit?: string
   ): Promise<SneakersListResponse> {
-    const sneakers = await this.sneakersService.findSneakerMany({
+    const sneakers = await this.sneakersService.findMany({
       take: parseInt(limit ?? '10', 10),
       skip: parseInt(offset ?? '0', 10),
       include: {
@@ -66,6 +75,55 @@ export class SneakersController extends BaseResolver {
     return this.wrapSuccess({ data: mappedSneakers })
   }
 
+  @Post()
+  @ApiOperation({ summary: 'Create a new sneaker' })
+  @ApiResponse({ type: CreateSneakerResponse })
+  @ApiBody({ type: CreateSneakerDto })
+  @UseAuthGuard(AdminGuard)
+  async create(
+    @Body() createSneakerDto: CreateSneakerDto
+  ): Promise<CreateSneakerResponse> {
+    let brand = await this.brandsService.findBrandUnique({
+      where: { name: createSneakerDto.brandName }
+    })
+
+    if (!brand) {
+      brand = await this.brandsService.create({
+        data: { name: createSneakerDto.brandName }
+      })
+    }
+
+    const existingSneaker = await this.sneakersService.findUnique({
+      where: { slug: createSneakerDto.slug }
+    })
+
+    if (existingSneaker) {
+      throw new BadRequestException('Sneaker with this slug already exists')
+    }
+
+    const sneaker = await this.sneakersService.create({
+      data: {
+        name: createSneakerDto.name,
+        slug: createSneakerDto.slug,
+        description: createSneakerDto.description,
+        price: createSneakerDto.price,
+        images: createSneakerDto.images,
+        brandId: brand.id
+      },
+      include: {
+        brand: {
+          select: {
+            name: true
+          }
+        }
+      }
+    })
+
+    return this.wrapSuccess({
+      data: mapToSneakerDetails({ ...sneaker, brandName: sneaker.brand.name })
+    })
+  }
+
   @Get('search')
   @ApiOperation({ summary: 'Search sneakers' })
   @ApiResponse({ type: SneakersSearchResponse })
@@ -78,7 +136,7 @@ export class SneakersController extends BaseResolver {
       return this.wrapSuccess({ data: [] })
     }
 
-    const sneakers = await this.sneakersService.findSneakerMany({
+    const sneakers = await this.sneakersService.findMany({
       take: parseInt(limit || '10', 10),
       skip: parseInt(offset || '0', 10),
       where: {
@@ -116,7 +174,7 @@ export class SneakersController extends BaseResolver {
   @ApiOperation({ summary: 'Popular sneakers' })
   @ApiResponse({ type: PopularSneakersResponse })
   async getPopular(): Promise<PopularSneakersResponse> {
-    const sneakers = await this.sneakersService.findSneakerMany({
+    const sneakers = await this.sneakersService.findMany({
       take: 50,
       include: {
         popularity: {
@@ -163,7 +221,7 @@ export class SneakersController extends BaseResolver {
   async getBySlug(
     @Param('slug') slug: string
   ): Promise<SneakerDetailsResponse> {
-    const sneaker = await this.sneakersService.findSneakerUnique({
+    const sneaker = await this.sneakersService.findUnique({
       where: {
         slug
       },
@@ -201,6 +259,47 @@ export class SneakersController extends BaseResolver {
 
     return this.wrapSuccess({
       data: mappedStockItems
+    })
+  }
+
+  @UseAuthGuard(AdminGuard)
+  @Post(':slug/stock')
+  @ApiOperation({ summary: 'Add stock to sneaker' })
+  @ApiResponse({ type: AddStockResponse })
+  @ApiBody({ type: AddStockDto })
+  async addStock(
+    @Param('slug') slug: string,
+    @Body() addStockDto: AddStockDto
+  ): Promise<AddStockResponse> {
+    const sneaker = await this.sneakersService.findUnique({
+      where: { slug }
+    })
+
+    if (!sneaker) {
+      throw new NotFoundException('Sneaker not found')
+    }
+
+    const stockItem = await this.stockService.upsert({
+      where: {
+        sneakerId_size: {
+          sneakerId: sneaker.id,
+          size: addStockDto.size
+        }
+      },
+      update: {
+        quantity: {
+          increment: addStockDto.quantity
+        }
+      },
+      create: {
+        sneakerId: sneaker.id,
+        size: addStockDto.size,
+        quantity: addStockDto.quantity
+      }
+    })
+
+    return this.wrapSuccess({
+      data: mapToStockItem(stockItem)
     })
   }
 }

@@ -29,4 +29,12 @@ export class StockService {
   ): Promise<Prisma.PopularityGetPayload<T> | null> {
     return this.prisma.popularity.findFirst(args) as any
   }
+
+  async upsert<T extends Prisma.StockUpsertArgs>(
+    args: T
+  ): Promise<Prisma.StockGetPayload<T>> {
+    return this.prisma.stock.upsert(args) as unknown as Promise<
+      Prisma.StockGetPayload<T>
+    >
+  }
 }

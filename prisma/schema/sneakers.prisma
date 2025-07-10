@@ -10,12 +10,13 @@ model Sneaker {
   stocks      Stock[]
   popularity  Popularity?
 
+  @@unique([name, brandId])
   @@map("sneaker")
 }
 
 model Brand {
   id       String    @id @default(cuid())
-  name     String
+  name     String    @unique
   sneakers Sneaker[]
 
   @@map("brand")
@@ -29,6 +30,7 @@ model Stock {
   quantity  Int
   cartItems CartItem[]
 
+  @@unique([sneakerId, size])
   @@map("stock")
 }
 

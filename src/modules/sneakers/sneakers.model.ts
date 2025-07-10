@@ -180,3 +180,13 @@ export class SneakerStockResponse extends BaseResponse {
   @ApiProperty({ type: [StockItem] })
   data: StockItem[]
 }
+
+export class CreateSneakerResponse extends BaseResponse {
+  @ApiProperty({ type: SneakerDetails })
+  data: SneakerDetails
+}
+
+export class AddStockResponse extends BaseResponse {
+  @ApiProperty({ type: StockItem })
+  data: StockItem
+}

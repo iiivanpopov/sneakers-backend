@@ -1,3 +1,4 @@
+import { Role } from '@/prisma'
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
@@ -17,7 +18,7 @@ export class AuthService {
     })
   }
 
-  async authenticate(user: { sub: string }) {
+  async authenticate(user: { role: Role; sub: string }) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(user, {
         secret: process.env.JWT_ACCESS_SECRET,
