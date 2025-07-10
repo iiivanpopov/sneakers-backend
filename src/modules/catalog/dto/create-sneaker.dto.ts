@@ -37,6 +37,12 @@ export class CreateSneakerDto {
   @IsNotEmpty()
   brandName: string
 
+  @ApiProperty({ example: 'https://cdn.com/image1.jpg' })
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  brandLogoUrl?: string
+
   @ApiProperty({
     type: [String],
     example: ['https://cdn.com/image1.jpg', 'https://cdn.com/image2.jpg'],

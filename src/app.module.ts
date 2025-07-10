@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { UsersModule } from './modules/users'
 import { OtpsModule } from './modules/otps'
-import { SneakersModule } from './modules/sneakers/sneakers.module'
 import { CartModule } from './modules/cart'
+import { CatalogModule } from './modules/catalog'
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { CartModule } from './modules/cart'
     }),
     OtpsModule,
     UsersModule,
-    SneakersModule,
+    CatalogModule,
     CartModule
   ]
 })

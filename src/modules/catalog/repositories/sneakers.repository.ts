@@ -3,8 +3,8 @@ import { PrismaService } from '@/utils/services/prisma'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
-export class SneakersService {
-  constructor(private readonly prisma: PrismaService) {}
+export class SneakersRepository {
+  constructor(protected readonly prisma: PrismaService) {}
 
   async findFirst<T extends Prisma.SneakerFindFirstArgs>(
     args: T

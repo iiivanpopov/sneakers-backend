@@ -14,8 +14,8 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { CartService } from './cart.service'
 import { CartListResponse, CartItem, mapToCartItemDto } from './cart.model'
-import { AddToCartDto } from './otp/add-to-cart.dto'
-import { UpdateCartDto } from './otp/update-cart.dto'
+import { AddToCartDto } from './dto/add-to-cart.dto'
+import { UpdateCartDto } from './dto/update-cart.dto'
 import { Request } from 'express'
 import { BaseResolver, BaseResponse } from '@/utils/services/base'
 

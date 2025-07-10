@@ -59,6 +59,11 @@ export class OtpsController extends BaseResolver {
     return this.wrapSuccess({ retryAt })
   }
 
+  @Get('otps')
+  async getOtps() {
+    return this.otpsService.findAll()
+  }
+
   @Get('/auth/otp/:email')
   @ApiOperation({ summary: 'OTP status' })
   @ApiResponse({

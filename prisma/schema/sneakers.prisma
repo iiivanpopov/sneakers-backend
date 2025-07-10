@@ -1,23 +1,30 @@
 model Sneaker {
-  id          String      @id @default(cuid())
-  slug        String      @unique
-  name        String
-  brandId     String      @map("brand_id")
-  brand       Brand       @relation(fields: [brandId], references: [id])
-  description String?
-  price       Int
-  images      String[]
-  stocks      Stock[]
-  popularity  Popularity?
+  id           String     @id @default(cuid())
+  slug         String     @unique
+  name         String
+  brandId      String     @map("brand_id")
+  brand        Brand      @relation(fields: [brandId], references: [id])
+  description  String?
+  price        Int
+  images       String[]
+  stocks       Stock[]
+  popularityId String     @unique @map("popularity_id")
+  popularity   Popularity @relation(fields: [popularityId], references: [id])
+  discount     Discount?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@unique([name, brandId])
   @@map("sneaker")
 }
 
 model Brand {
-  id       String    @id @default(cuid())
-  name     String    @unique
-  sneakers Sneaker[]
+  id        String    @id @default(cuid())
+  name      String    @unique
+  logo      String?
+  sneakers  Sneaker[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("brand")
 }
@@ -29,16 +36,35 @@ model Stock {
   size      Float
   quantity  Int
   cartItems CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@unique([sneakerId, size])
   @@map("stock")
 }
 
 model Popularity {
-  sneakerId String  @id @map("sneaker_id")
-  sneaker   Sneaker @relation(fields: [sneakerId], references: [id])
-  views     Int     @default(0)
-  purchases Int     @default(0)
+  id        String    @id @default(cuid())
+  sneakers  Sneaker[]
+  views     Int       @default(0)
+  purchases Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("popularity")
+}
+
+model Discount {
+  id        String    @id @default(cuid())
+  title     String
+  amount    Int
+  percent   Int?
+  startsAt  DateTime?
+  endsAt    DateTime?
+  sneakerId String    @unique
+  sneaker   Sneaker   @relation(fields: [sneakerId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("discount")
 }

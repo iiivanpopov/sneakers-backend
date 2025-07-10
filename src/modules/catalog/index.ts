@@ -1,4 +1,6 @@
-export * from './sneakers.module'
+export * from './catalog.module'
 export * from './services/sneakers.service'
 export * from './services/brands.service'
 export * from './services/stock.service'
+export * from './services/popularity.service'
+export * from './services/discount.service'

@@ -12,6 +12,21 @@ export class OtpsService {
     return OTP_REDIS_KEY(email)
   }
 
+  async findAll(): Promise<OtpEntity[] | null> {
+    const keys = await this.redis.keys('otp:*')
+    if (!keys.length) return null
+
+    const otps: OtpEntity[] = []
+
+    for (const key of keys) {
+      const data = await this.redis.hgetall(key)
+      if (Object.keys(data).length === 0) continue
+      otps.push(mapToOtpEntity(data))
+    }
+
+    return otps
+  }
+
   async create(otp: OtpEntity, ttlSeconds: number): Promise<void> {
     const key = this.getRedisKey(otp.email)
     const data = {

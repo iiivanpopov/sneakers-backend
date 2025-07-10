@@ -1,0 +1,12 @@
+---
+---
+
+# Project Structure Guide
+
+- The main entry point is [src/main.ts](mdc:src/main.ts), which bootstraps the NestJS application.
+- Application modules are located in [src/modules/](mdc:src/modules/), organized by feature (e.g., users, cart, catalog, otps).
+- Each module typically contains its own controllers, services, models, DTOs, and entities.
+- Shared utilities and services are in [src/utils/](mdc:src/utils/).
+- Database schema files are in [prisma/schema/](mdc:prisma/schema/).
+- The main application module is [src/app.module.ts](mdc:src/app.module.ts).
+- Configuration and build files are in the project root (e.g., [package.json](mdc:package.json), [tsconfig.json](mdc:tsconfig.json)).
