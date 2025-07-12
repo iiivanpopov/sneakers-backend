@@ -60,7 +60,7 @@ export class UsersController extends BaseResolver {
     @Body() signInDto: SignInDto,
     @Res({ passthrough: true }) res: Response
   ): Promise<SignInResponse> {
-    let user = await this.usersService.findFirst({
+    let user = await this.usersService.findUnique({
       where: { email: signInDto.email }
     })
 
@@ -131,7 +131,7 @@ export class UsersController extends BaseResolver {
     return this.wrapSuccess()
   }
 
-  @Post('auth/refresh')
+  @Get('auth/refresh')
   @ApiOperation({ summary: 'Refresh access token using refresh token cookie' })
   @ApiResponse({
     status: 200,
@@ -193,8 +193,11 @@ export class UsersController extends BaseResolver {
   @ApiOperation({ summary: 'Get user session' })
   @ApiBearerAuth()
   async getUserSession(@Req() req: Request): Promise<SessionResponse> {
-    const user = await this.usersService.findFirst({
-      where: { id: req.user?.userId }
+    if (!req.user?.id) {
+      throw new BadRequestException(this.wrapFail('User does not exists'))
+    }
+    const user = await this.usersService.findUnique({
+      where: { id: req.user?.id }
     })
 
     if (!user) {
@@ -217,10 +220,14 @@ export class UsersController extends BaseResolver {
   })
   @ApiBearerAuth()
   async updateProfile(
+    @Req() req: Request,
     @Body() updateProfileDto: UpdateProfileDto
   ): Promise<UpdateProfileResponse> {
-    const user = await this.usersService.findFirst({
-      where: { email: updateProfileDto.email }
+    if (!req.user?.id) {
+      throw new BadRequestException(this.wrapFail('User does not exists'))
+    }
+    const user = await this.usersService.findUnique({
+      where: { id: req.user?.id }
     })
 
     if (!user) {
@@ -234,6 +241,7 @@ export class UsersController extends BaseResolver {
         lastName: updateProfileDto.profile.lastName,
         middleName: updateProfileDto.profile.middleName,
         email: updateProfileDto.profile.email,
+        country: updateProfileDto.profile.country,
         city: updateProfileDto.profile.city
       }
     })

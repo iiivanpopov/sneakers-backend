@@ -31,7 +31,7 @@ export class CartController extends BaseResolver {
   @ApiOperation({ summary: 'Get cart items' })
   @ApiResponse({ type: CartListResponse })
   async getCart(@Req() req: Request): Promise<CartListResponse> {
-    const userId = req.user?.userId
+    const userId = req.user?.id
     if (!userId) throw new UnauthorizedException()
 
     const cartItems = await this.cartService.findMany({
@@ -57,7 +57,7 @@ export class CartController extends BaseResolver {
     @Body() dto: AddToCartDto,
     @Req() req: Request
   ): Promise<CartItem> {
-    const userId = req.user?.userId
+    const userId = req.user?.id
     if (!userId) throw new UnauthorizedException()
 
     const cartItem = await this.cartService.create({
@@ -82,7 +82,7 @@ export class CartController extends BaseResolver {
     @Body() dto: UpdateCartDto,
     @Req() req: Request
   ): Promise<CartItem> {
-    const userId = req.user?.userId
+    const userId = req.user?.id
     if (!userId) throw new UnauthorizedException()
 
     const stock = await this.cartService.findFirst({
@@ -124,7 +124,7 @@ export class CartController extends BaseResolver {
     @Param('slug') slug: string,
     @Req() req: Request
   ): Promise<BaseResponse> {
-    const userId = req.user?.userId
+    const userId = req.user?.id
     if (!userId) throw new UnauthorizedException()
 
     const stock = await this.cartService.findFirst({
@@ -153,7 +153,7 @@ export class CartController extends BaseResolver {
   @Delete()
   @ApiOperation({ summary: 'Clear entire cart' })
   async clearCart(@Req() req: Request): Promise<BaseResponse> {
-    const userId = req.user?.userId
+    const userId = req.user?.id
     if (!userId) throw new UnauthorizedException()
 
     await this.cartService.deleteMany({ where: { userId } })
