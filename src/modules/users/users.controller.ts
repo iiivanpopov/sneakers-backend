@@ -102,7 +102,7 @@ export class UsersController extends BaseResolver {
       sameSite: 'none'
     })
 
-    return this.wrapSuccess({ accessToken })
+    return this.wrapSuccess({ accessToken, user })
   }
 
   @Post('auth/logout')

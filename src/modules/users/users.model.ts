@@ -39,6 +39,9 @@ export class SessionResponse extends BaseResponse {
 export class SignInResponse extends BaseResponse {
   @ApiProperty({ example: 'jwt.token.here', description: 'Access token' })
   accessToken: string
+
+  @ApiProperty({ type: UserResponseDto })
+  user: UserResponseDto
 }
 
 export class RefreshResponse extends BaseResponse {
