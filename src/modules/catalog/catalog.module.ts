@@ -15,6 +15,7 @@ import { DiscountService } from './services/discount.service'
 import { PopularityService } from './services/popularity.service'
 import { SneakersService } from './services/sneakers.service'
 import { StockService } from './services/stock.service'
+import { FavoritesService } from '../favorites/favorites.service'
 
 @Module({
   imports: [PrismaModule],
@@ -24,7 +25,9 @@ import { StockService } from './services/stock.service'
     StockRepository,
     DiscountRepository,
     PopularityRepository,
+    FavoritesService,
 
+    FavoritesService,
     SneakersService,
     BrandsService,
     StockService,

@@ -6,6 +6,7 @@ import { mapToSneakerDetails } from '../utils/mappers/mapToSneakerDetails'
 import { BrandsService } from './brands.service'
 import { PopularityService } from './popularity.service'
 import { PrismaService } from '@/utils/services/prisma'
+import { FavoritesService } from '@/modules/favorites/favorites.service'
 
 interface GetSneakersOptions {
   offset?: string
@@ -14,17 +15,20 @@ interface GetSneakersOptions {
   hasDiscount?: boolean
   minPrice?: number
   maxPrice?: number
+  userId?: string
 }
 
 interface SearchSneakersOptions {
   query: string
   offset?: string
   limit?: string
+  userId?: string
 }
 
 interface GetDiscountedSneakersOptions {
   offset?: string
   limit?: string
+  userId?: string
 }
 
 @Injectable()
@@ -32,9 +36,19 @@ export class SneakersService extends SneakersRepository {
   constructor(
     protected readonly prisma: PrismaService,
     private readonly brandsService: BrandsService,
+    private readonly favoritesService: FavoritesService,
     private readonly popularityService: PopularityService
   ) {
     super(prisma)
+  }
+
+  private async getUserFavorites(userId?: string): Promise<string[]> {
+    if (!userId) return []
+    const favorites = await this.favoritesService.findMany({
+      where: { userId },
+      select: { sneakerId: true }
+    })
+    return favorites.map(fav => fav.sneakerId)
   }
 
   async getSneakers(options: GetSneakersOptions): Promise<SneakerDetails[]> {
@@ -85,7 +99,14 @@ export class SneakersService extends SneakersRepository {
       }
     })
 
-    return sneakers.map(mapToSneakerDetails)
+    const userFavoredIds = await this.getUserFavorites(options.userId)
+
+    return sneakers.map(sneaker =>
+      mapToSneakerDetails({
+        ...sneaker,
+        isFavored: userFavoredIds.includes(sneaker.id)
+      })
+    )
   }
 
   async createSneaker(
@@ -133,7 +154,10 @@ export class SneakersService extends SneakersRepository {
       }
     })
 
-    return mapToSneakerDetails(sneaker)
+    return mapToSneakerDetails({
+      ...sneaker,
+      isFavored: false
+    })
   }
 
   async searchSneakers(
@@ -173,7 +197,14 @@ export class SneakersService extends SneakersRepository {
       await this.popularityService.incrementViews(sneakers[0].id)
     }
 
-    return sneakers.map(mapToSneakerDetails)
+    const userFavoredIds = await this.getUserFavorites(options.userId)
+
+    return sneakers.map(sneaker =>
+      mapToSneakerDetails({
+        ...sneaker,
+        isFavored: userFavoredIds.includes(sneaker.id)
+      })
+    )
   }
 
   async getDiscountedSneakers(
@@ -206,10 +237,20 @@ export class SneakersService extends SneakersRepository {
       }
     })
 
-    return sneakers.map(mapToSneakerDetails)
+    const userFavoredIds = await this.getUserFavorites(options.userId)
+
+    return sneakers.map(sneaker =>
+      mapToSneakerDetails({
+        ...sneaker,
+        isFavored: userFavoredIds.includes(sneaker.id)
+      })
+    )
   }
 
-  async getSneakerBySlug(slug: string): Promise<SneakerDetails | null> {
+  async getSneakerBySlug(
+    slug: string,
+    userId?: string
+  ): Promise<SneakerDetails | null> {
     const sneaker = await this.findUnique({
       where: {
         slug
@@ -227,6 +268,11 @@ export class SneakersService extends SneakersRepository {
 
     await this.popularityService.incrementViews(sneaker.id)
 
-    return mapToSneakerDetails(sneaker)
+    const userFavoredIds = await this.getUserFavorites(userId)
+
+    return mapToSneakerDetails({
+      ...sneaker,
+      isFavored: userFavoredIds.includes(sneaker.id)
+    })
   }
 }

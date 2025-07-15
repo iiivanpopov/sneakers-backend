@@ -9,17 +9,14 @@ import {
   UnauthorizedException
 } from '@nestjs/common'
 import { FavoritesService } from './favorites.service'
-import { ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { BaseResolver } from '@/utils/services/base'
-import {
-  AddToFavoriteResponse,
-  GetFavoritesResponse,
-  RemoveFromFavoriteResponse
-} from './favorites.model'
+import { GetFavoritesResponse } from './favorites.model'
 import { UseAuthGuard } from '@/utils/guards/auth.guard'
 import { Request } from 'express'
 import { SneakersService } from '../catalog'
 import { mapToSneakerDetails } from '../catalog/utils/mappers/mapToSneakerDetails'
+import { SneakerDetails } from '../catalog/entities/sneaker.entity'
 
 @ApiTags('Favorites')
 @UseAuthGuard()
@@ -33,6 +30,7 @@ export class FavoritesController extends BaseResolver {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get user favorites' })
   @ApiResponse({ type: GetFavoritesResponse })
   async getFavorites(@Req() req: Request): Promise<GetFavoritesResponse> {
     const userId = req.user?.id
@@ -44,29 +42,39 @@ export class FavoritesController extends BaseResolver {
         sneaker: {
           include: {
             brand: true,
-            popularity: true
+            popularity: true,
+            discount: true
           }
         }
       }
     })
 
-    const sneakers = favorites.map(f => mapToSneakerDetails(f.sneaker))
+    const sneakers = favorites.map(f =>
+      mapToSneakerDetails({
+        ...f.sneaker,
+        isFavored: true
+      })
+    )
 
     return this.wrapSuccess({ data: sneakers })
   }
 
   @Post(':slug')
-  @ApiResponse({ type: AddToFavoriteResponse })
+  @ApiOperation({ summary: 'Add sneaker to favorites' })
+  @ApiResponse({ type: SneakerDetails })
   async addToFavorite(
     @Param('slug') slug: string,
     @Req() req: Request
-  ): Promise<AddToFavoriteResponse> {
+  ): Promise<SneakerDetails> {
     const userId = req.user?.id
     if (!userId) throw new UnauthorizedException(this.wrapFail())
 
     const sneaker = await this.sneakersService.findUnique({
-      where: {
-        slug
+      where: { slug },
+      include: {
+        brand: true,
+        popularity: true,
+        discount: true
       }
     })
 
@@ -75,23 +83,35 @@ export class FavoritesController extends BaseResolver {
 
     await this.favoritesService.create({
       data: {
-        sneakerId: sneaker?.id,
+        sneakerId: sneaker.id,
         userId
       }
     })
 
-    return this.wrapSuccess()
+    return this.wrapSuccess(
+      mapToSneakerDetails({
+        ...sneaker,
+        isFavored: true
+      })
+    )
   }
 
   @Delete(':slug')
-  @ApiResponse({ type: RemoveFromFavoriteResponse })
-  async deleteFrom(@Param('slug') slug: string, @Req() req: Request) {
+  @ApiOperation({ summary: 'Remove sneaker from favorites' })
+  @ApiResponse({ type: SneakerDetails })
+  async deleteFrom(
+    @Param('slug') slug: string,
+    @Req() req: Request
+  ): Promise<SneakerDetails> {
     const userId = req.user?.id
     if (!userId) throw new UnauthorizedException(this.wrapFail())
 
     const sneaker = await this.sneakersService.findUnique({
-      where: {
-        slug
+      where: { slug },
+      include: {
+        brand: true,
+        popularity: true,
+        discount: true
       }
     })
 
@@ -100,11 +120,16 @@ export class FavoritesController extends BaseResolver {
 
     await this.favoritesService.delete({
       where: {
-        sneakerId: sneaker?.id,
+        sneakerId: sneaker.id,
         userId
       }
     })
 
-    return this.wrapSuccess()
+    return this.wrapSuccess(
+      mapToSneakerDetails({
+        ...sneaker,
+        isFavored: false // Removed from favorites
+      })
+    )
   }
 }

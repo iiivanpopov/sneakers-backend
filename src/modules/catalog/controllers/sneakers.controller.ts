@@ -5,7 +5,8 @@ import {
   NotFoundException,
   Param,
   Post,
-  Query
+  Query,
+  Req
 } from '@nestjs/common'
 import {
   ApiBody,
@@ -22,9 +23,10 @@ import {
 } from '../models/sneakers.model'
 import { BaseResolver } from '@/utils/services/base'
 import { CreateSneakerDto } from '../dto/create-sneaker.dto'
-import { UseAuthGuard } from '@/utils/guards/auth.guard'
+import { UseAuthGuard, UseOptionalAuthGuard } from '@/utils/guards/auth.guard'
 import { AdminGuard } from '@/utils/guards/admin.guard'
 import { SneakersService } from '../services/sneakers.service'
+import { Request } from 'express'
 
 @ApiTags('Sneakers')
 @Controller('sneakers')
@@ -34,6 +36,7 @@ export class SneakersController extends BaseResolver {
   }
 
   @Get()
+  @UseOptionalAuthGuard()
   @ApiOperation({ summary: 'Sneakers list' })
   @ApiResponse({ type: SneakersListResponse })
   @ApiQuery({ name: 'offset', required: false, type: String })
@@ -43,6 +46,7 @@ export class SneakersController extends BaseResolver {
   @ApiQuery({ name: 'minPrice', required: false, type: Number })
   @ApiQuery({ name: 'maxPrice', required: false, type: Number })
   async getAll(
+    @Req() req: Request,
     @Query('offset') offset?: string,
     @Query('limit') limit?: string,
     @Query('brandName') brandName?: string,
@@ -50,13 +54,16 @@ export class SneakersController extends BaseResolver {
     @Query('minPrice') minPrice?: number,
     @Query('maxPrice') maxPrice?: number
   ): Promise<SneakersListResponse> {
+    const userId = req.user?.id
+
     const sneakers = await this.sneakersService.getSneakers({
       offset,
       limit,
       brandName,
       hasDiscount,
       minPrice,
-      maxPrice
+      maxPrice,
+      userId
     })
 
     return this.wrapSuccess({ data: sneakers })

@@ -13,18 +13,32 @@ import {
 } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { CartService } from './cart.service'
-import { CartListResponse, CartItem, mapToCartItemDto } from './cart.model'
+import { CartListResponse } from './cart.model'
 import { AddToCartDto } from './dto/add-to-cart.dto'
 import { UpdateCartDto } from './dto/update-cart.dto'
 import { Request } from 'express'
 import { BaseResolver, BaseResponse } from '@/utils/services/base'
+import { mapToSneakerDetails } from '../catalog/utils/mappers/mapToSneakerDetails'
+import { SneakerDetails } from '../catalog/entities/sneaker.entity'
+import { FavoritesService } from '@/modules/favorites/favorites.service'
 
 @ApiTags('Cart')
 @Controller('cart')
 @UseAuthGuard()
 export class CartController extends BaseResolver {
-  constructor(private readonly cartService: CartService) {
+  constructor(
+    private readonly cartService: CartService,
+    private readonly favoritesService: FavoritesService
+  ) {
     super()
+  }
+
+  private async getUserFavorites(userId: string): Promise<string[]> {
+    const favorites = await this.favoritesService.findMany({
+      where: { userId },
+      select: { sneakerId: true }
+    })
+    return favorites.map(fav => fav.sneakerId)
   }
 
   @Get()
@@ -39,24 +53,37 @@ export class CartController extends BaseResolver {
       include: {
         stock: {
           include: {
-            sneaker: true
+            sneaker: {
+              include: {
+                brand: true,
+                popularity: true,
+                discount: true
+              }
+            }
           }
         }
       }
     })
 
-    const mappedCartItems: CartItem[] = cartItems.map(mapToCartItemDto)
+    const userFavoredIds = await this.getUserFavorites(userId)
+
+    const mappedCartItems: SneakerDetails[] = cartItems.map(c =>
+      mapToSneakerDetails({
+        ...c.stock.sneaker,
+        isFavored: userFavoredIds.includes(c.stock.sneaker.id)
+      })
+    )
 
     return this.wrapSuccess({ data: mappedCartItems })
   }
 
   @Post()
   @ApiOperation({ summary: 'Add item to cart' })
-  @ApiResponse({ type: CartItem })
+  @ApiResponse({ type: SneakerDetails })
   async addItem(
     @Body() dto: AddToCartDto,
     @Req() req: Request
-  ): Promise<CartItem> {
+  ): Promise<SneakerDetails> {
     const userId = req.user?.id
     if (!userId) throw new UnauthorizedException()
 
@@ -65,23 +92,36 @@ export class CartController extends BaseResolver {
       include: {
         stock: {
           include: {
-            sneaker: true
+            sneaker: {
+              include: {
+                brand: true,
+                popularity: true,
+                discount: true
+              }
+            }
           }
         }
       }
     })
 
-    return this.wrapSuccess(mapToCartItemDto(cartItem))
+    const userFavoredIds = await this.getUserFavorites(userId)
+
+    return this.wrapSuccess(
+      mapToSneakerDetails({
+        ...cartItem.stock.sneaker,
+        isFavored: userFavoredIds.includes(cartItem.stock.sneaker.id)
+      })
+    )
   }
 
   @Patch(':slug')
   @ApiOperation({ summary: 'Update item quantity' })
-  @ApiResponse({ type: CartItem })
+  @ApiResponse({ type: SneakerDetails })
   async updateItem(
     @Param('slug') slug: string,
     @Body() dto: UpdateCartDto,
     @Req() req: Request
-  ): Promise<CartItem> {
+  ): Promise<SneakerDetails> {
     const userId = req.user?.id
     if (!userId) throw new UnauthorizedException()
 
@@ -109,13 +149,26 @@ export class CartController extends BaseResolver {
       include: {
         stock: {
           include: {
-            sneaker: true
+            sneaker: {
+              include: {
+                brand: true,
+                popularity: true,
+                discount: true
+              }
+            }
           }
         }
       }
     })
 
-    return this.wrapSuccess(mapToCartItemDto(cartItem))
+    const userFavoredIds = await this.getUserFavorites(userId)
+
+    return this.wrapSuccess(
+      mapToSneakerDetails({
+        ...cartItem.stock.sneaker,
+        isFavored: userFavoredIds.includes(cartItem.stock.sneaker.id)
+      })
+    )
   }
 
   @Delete(':slug')

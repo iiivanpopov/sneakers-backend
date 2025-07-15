@@ -11,6 +11,7 @@ export const mapToSneakerDetails = (sneaker: {
   price: number
   images: string[]
   brand: Brand
+  isFavored?: boolean
   popularity: Popularity
   discount?: Discount | null
 }): SneakerDetails => {
@@ -35,6 +36,7 @@ export const mapToSneakerDetails = (sneaker: {
     views: sneaker.popularity?.views ?? 0,
     purchases: sneaker.popularity?.purchases ?? 0,
     brandName: sneaker.brand.name,
+    isFavored: sneaker.isFavored ?? false,
     finalPrice,
     hasActiveDiscount,
     discountSavings

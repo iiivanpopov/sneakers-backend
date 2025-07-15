@@ -34,6 +34,9 @@ export class SneakerDetails {
   @ApiProperty()
   hasActiveDiscount: boolean
 
+  @ApiProperty()
+  isFavored: boolean
+
   @ApiProperty({ required: false, nullable: true })
   discountSavings?: number
 
@@ -47,6 +50,7 @@ export class SneakerDetails {
     views: number
     purchases: number
     brandName: string
+    isFavored: boolean
     finalPrice: number
     hasActiveDiscount: boolean
     discountSavings?: number
