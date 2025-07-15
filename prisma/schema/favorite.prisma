@@ -1,0 +1,9 @@
+model FavoriteItem {
+  id        String  @id @default(cuid())
+  sneaker   Sneaker @relation(fields: [sneakerId], references: [id])
+  userId    String  @map("user_id")
+  user      User    @relation(fields: [userId], references: [id])
+  sneakerId String  @unique @map("sneaker_id")
+
+  @@map("favorite_item")
+}

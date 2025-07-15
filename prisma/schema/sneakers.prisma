@@ -1,18 +1,19 @@
 model Sneaker {
-  id           String     @id @default(cuid())
-  slug         String     @unique
+  id           String         @id @default(cuid())
+  slug         String         @unique
   name         String
-  brandId      String     @map("brand_id")
-  brand        Brand      @relation(fields: [brandId], references: [id])
+  brandId      String         @map("brand_id")
+  brand        Brand          @relation(fields: [brandId], references: [id])
   description  String?
   price        Int
   images       String[]
   stocks       Stock[]
-  popularityId String     @unique @map("popularity_id")
-  popularity   Popularity @relation(fields: [popularityId], references: [id])
+  popularityId String         @unique @map("popularity_id")
+  popularity   Popularity     @relation(fields: [popularityId], references: [id])
   discount     Discount?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  favorites    FavoriteItem[]
 
   @@unique([name, brandId])
   @@map("sneaker")
