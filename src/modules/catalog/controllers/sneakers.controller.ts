@@ -29,6 +29,7 @@ import { SneakersService } from '../services/sneakers.service'
 import { Request } from 'express'
 
 @ApiTags('Sneakers')
+@UseOptionalAuthGuard()
 @Controller('sneakers')
 export class SneakersController extends BaseResolver {
   constructor(private readonly sneakersService: SneakersService) {
@@ -36,7 +37,6 @@ export class SneakersController extends BaseResolver {
   }
 
   @Get()
-  @UseOptionalAuthGuard()
   @ApiOperation({ summary: 'Sneakers list' })
   @ApiResponse({ type: SneakersListResponse })
   @ApiQuery({ name: 'offset', required: false, type: String })
@@ -91,12 +91,15 @@ export class SneakersController extends BaseResolver {
   @ApiQuery({ name: 'offset', required: false, type: String })
   @ApiQuery({ name: 'limit', required: false, type: String })
   async search(
+    @Req() req: Request,
     @Query('q') query: string,
     @Query('offset') offset?: string,
     @Query('limit') limit?: string
   ): Promise<SneakersSearchResponse> {
+    const userId = req.user?.id
     const sneakers = await this.sneakersService.searchSneakers({
       query,
+      userId,
       offset,
       limit
     })
@@ -112,12 +115,15 @@ export class SneakersController extends BaseResolver {
   @ApiQuery({ name: 'offset', required: false, type: String })
   @ApiQuery({ name: 'limit', required: false, type: String })
   async getDiscounted(
+    @Req() req: Request,
     @Query('offset') offset?: string,
     @Query('limit') limit?: string
   ): Promise<SneakersListResponse> {
+    const userId = req.user?.id
     const sneakers = await this.sneakersService.getDiscountedSneakers({
       offset,
-      limit
+      limit,
+      userId
     })
 
     return this.wrapSuccess({ data: sneakers })
@@ -127,9 +133,12 @@ export class SneakersController extends BaseResolver {
   @ApiOperation({ summary: 'Sneaker details by slug' })
   @ApiResponse({ type: SneakerDetailsResponse })
   async getBySlug(
-    @Param('slug') slug: string
+    @Param('slug') slug: string,
+    @Req() req: Request
   ): Promise<SneakerDetailsResponse> {
-    const sneaker = await this.sneakersService.getSneakerBySlug(slug)
+    const userId = req.user?.id
+
+    const sneaker = await this.sneakersService.getSneakerBySlug(slug, userId)
 
     if (!sneaker) {
       throw new NotFoundException('Sneaker not found')

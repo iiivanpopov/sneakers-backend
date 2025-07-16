@@ -180,8 +180,9 @@ export class CartController extends BaseResolver {
     const userId = req.user?.id
     if (!userId) throw new UnauthorizedException()
 
-    const stock = await this.cartService.findFirst({
+    const cartItem = await this.cartService.findFirst({
       where: {
+        userId,
         stock: {
           sneaker: {
             slug
@@ -189,13 +190,14 @@ export class CartController extends BaseResolver {
         }
       }
     })
-    if (!stock) throw new NotFoundException('Stock item not found')
+
+    if (!cartItem) throw new NotFoundException('Cart item not found')
 
     await this.cartService.delete({
       where: {
         userId_stockId: {
           userId,
-          stockId: stock.id
+          stockId: cartItem.stockId
         }
       }
     })

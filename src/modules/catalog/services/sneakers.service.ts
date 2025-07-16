@@ -269,7 +269,7 @@ export class SneakersService extends SneakersRepository {
     await this.popularityService.incrementViews(sneaker.id)
 
     const userFavoredIds = await this.getUserFavorites(userId)
-
+    console.log(userId)
     return mapToSneakerDetails({
       ...sneaker,
       isFavored: userFavoredIds.includes(sneaker.id)
